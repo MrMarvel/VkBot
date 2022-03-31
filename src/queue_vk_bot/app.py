@@ -56,9 +56,16 @@ def load_config() -> None:
     token = config['API'].get('api_token')
 
 
+CONFIG_FILENAME = "../../config.ini"
+
+
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    CONFIG_FILENAME = "../../config.ini"
+def run():
+    """
+    Initial function
+    :return:
+    """
+
     print_hi('PyCharm')
     load_config()
 

@@ -4,4 +4,4 @@ src
 .. toctree::
    :maxdepth: 4
 
-   queuevkbot
+   queue_vk_bot
