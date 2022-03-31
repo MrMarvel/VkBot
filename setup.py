@@ -1,16 +1,27 @@
+import setuptools
 from setuptools import setup
 
+with open("README.md", "r", encoding="utf-8") as fh:
+    long_description = fh.read()
 
-name = 'QueueVkBot'
-version = '0.0.1'
-release = '0.0.1'
 setup(
-    name=name,
-    version=release,
-    packages=[''],
-    url='',
-    license='',
-    author='Sergey',
-    author_email='seregakkk999@yandex.ru',
-    description='VK bot for working with queues and another interesting things',
+    name="queue-vk-bot-mrmarvel",
+    version="0.0.1",
+    author="Sergey",
+    author_email="seregakkk999@yandex.ru",
+    description="VK Bot for organising queues and other interesting things",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/SADT-Boting/VkBot",
+    project_urls={
+        "Bug Tracker": "https://github.com/SADT-Boting/VkBot/issues",
+    },
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    package_dir={"": "src"},
+    packages=setuptools.find_packages(where="src"),
+    python_requires=">=3.9",
 )
