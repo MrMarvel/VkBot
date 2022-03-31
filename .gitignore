@@ -33,3 +33,6 @@ gradle-app.setting
 docs/build/*
 !docs/build/html/
 **/__pycache__
+
+# dist
+dist/

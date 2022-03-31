@@ -25,6 +25,9 @@ setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
+    install_requires=["setuptools~=61.2.0",
+                      "vk_api~=11.9.7",
+                      "sphinx~=4.5.0"],
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.9"
 )
