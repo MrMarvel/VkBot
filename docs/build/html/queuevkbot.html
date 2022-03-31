@@ -37,6 +37,72 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
+<section id="module-queuevkbot.app">
+<span id="queuevkbot-app-module"></span><h2>queuevkbot.app module<a class="headerlink" href="#module-queuevkbot.app" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="queuevkbot.app.load_config">
+<span class="sig-prename descclassname"><span class="pre">queuevkbot.app.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queuevkbot.app.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load main config
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queuevkbot.app.prepare_config">
+<span class="sig-prename descclassname"><span class="pre">queuevkbot.app.</span></span><span class="sig-name descname"><span class="pre">prepare_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queuevkbot.app.prepare_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare config before loading.
+Adding default values instead of leak of them.
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queuevkbot.app.print_hi">
+<span class="sig-prename descclassname"><span class="pre">queuevkbot.app.</span></span><span class="sig-name descname"><span class="pre">print_hi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queuevkbot.app.print_hi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print hello to username
+:param name: Username
+:return:</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="queuevkbot.app.vk">
+<span class="sig-prename descclassname"><span class="pre">queuevkbot.app.</span></span><span class="sig-name descname"><span class="pre">vk</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;vk_api.vk_api.VkApi</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#queuevkbot.app.vk" title="Permalink to this definition">¶</a></dt>
+<dd><p>longpoll = VkLongPoll(vk)</p>
+<p># Основной цикл
+for event in longpoll.listen():</p>
+<blockquote>
+<div><p># Если пришло новое сообщение
+if event.type == VkEventType.MESSAGE_NEW:</p>
+<blockquote>
+<div><p># Если оно имеет метку для меня( то есть бота)
+if event.to_me:</p>
+<blockquote>
+<div><p># Сообщение от пользователя
+request = event.text</p>
+<p># Каменная логика ответа
+if request == “привет”:</p>
+<blockquote>
+<div><p>write_msg(event.user_id, “Хай”)</p>
+</div></blockquote>
+<dl class="simple">
+<dt>elif request == “пока”:</dt><dd><p>write_msg(event.user_id, “Пока((“)</p>
+</dd>
+<dt>else:</dt><dd><p>write_msg(event.user_id, “Не поняла вашего ответа…”)</p>
+</dd>
+</dl>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queuevkbot.app.write_msg">
+<span class="sig-prename descclassname"><span class="pre">queuevkbot.app.</span></span><span class="sig-name descname"><span class="pre">write_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queuevkbot.app.write_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message to VK user
+:param user_id: ID of VK user
+:param message: String of message to send
+:return:</p>
+</dd></dl>
+
+</section>
 <section id="module-queuevkbot.book">
 <span id="queuevkbot-book-module"></span><h2>queuevkbot.book module<a class="headerlink" href="#module-queuevkbot.book" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">

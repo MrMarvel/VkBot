@@ -4,6 +4,14 @@ queuevkbot package
 Submodules
 ----------
 
+queuevkbot.app module
+---------------------
+
+.. automodule:: queuevkbot.app
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 queuevkbot.book module
 ----------------------
 

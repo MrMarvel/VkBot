@@ -13,6 +13,7 @@ def print_hi(name: str) -> None:
     :param name: Username
     :return:
     """
+
     # Use a breakpoint in the code line below to debug your script.
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
@@ -23,6 +24,7 @@ def prepare_config() -> None:
     Adding default values instead of leak of them.
     :return:
     """
+
     config = cp.ConfigParser()
     config.read(CONFIG_FILENAME)
     api_label = 'API'
@@ -46,6 +48,7 @@ def load_config() -> None:
     Load main config
     :return:
     """
+
     global token
     prepare_config()
     config = cp.ConfigParser()
@@ -67,6 +70,7 @@ def write_msg(user_id, message):
     :param message: String of message to send
     :return:
     """
+
     vk.method('messages.send', {'user_id': user_id, 'message': message})
 
 
