@@ -1,6 +1,6 @@
 FROM python:3
 
-ADD ./src/queue_vk_bot_mrmarvel ./app
+ADD . /app
 
 WORKDIR /app
 RUN pip install -r requirements.txt
