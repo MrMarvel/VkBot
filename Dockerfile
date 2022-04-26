@@ -5,4 +5,6 @@ ADD . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-CMD [ "python", "-m", "queue_vk_bot_mrmarvel" ]
+VOLUME ["data"]
+
+CMD [ "python", "-m", "src.queue_vk_bot_mrmarvel" ]
