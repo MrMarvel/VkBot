@@ -82,7 +82,8 @@ def run():
         pass
         #load_config()
     except FileNotFoundError:
-        token = os.environ.get('TOKEN')
+        pass
+    token = os.environ.get('TOKEN')
     # Авторизуемся как сообщество
     vk = vk_api.VkApi(token=token)
     # Работа с сообщениями

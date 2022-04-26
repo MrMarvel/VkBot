@@ -19,3 +19,4 @@ jobs:
           remote_branch: "feature/docker"
         env:
           HD_TOKEN: ${{secrets.VK_TOKEN}}
+          HD_RANDOM_DATA: "Hello"
