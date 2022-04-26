@@ -1,0 +1,10 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  app:
+    build: .
+    volumes:
+      - .:/usr/src/app
+  redis:
+    image: redis
+volumes:
+  logvolume01: {}

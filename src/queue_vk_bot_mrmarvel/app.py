@@ -1,5 +1,11 @@
 import configparser as cp
+import random
+import time
+
 import vk_api
+from vk_api.longpoll import VkLongPoll, VkEventType
+import os
+
 from .book import *
 
 
@@ -27,6 +33,7 @@ def prepare_config() -> None:
 
     config = cp.ConfigParser()
     config.read(CONFIG_FILENAME)
+
     api_label = 'API'
     if not config.has_section(api_label):
         config.add_section(api_label)
@@ -34,6 +41,7 @@ def prepare_config() -> None:
     if 'api_token' not in api:
         # noinspection SpellCheckingInspection
         api['api_token'] = "6a9c267cd469388709a9e9acaddbe0aa81a0abbf12239b3e597a31729ffbddb9c88e80a443554c918b8f7"
+
     with open(CONFIG_FILENAME, 'w') as configfile:
         config.write(configfile)
 
@@ -56,7 +64,7 @@ def load_config() -> None:
     token = config['API'].get('api_token')
 
 
-CONFIG_FILENAME = "../../config.ini"
+CONFIG_FILENAME = "data/config.ini"
 
 
 # Press the green button in the gutter to run the script.
@@ -65,45 +73,46 @@ def run():
     Initial function
     :return:
     """
+    print("Absolute path:", os.path.abspath(''))
 
     print_hi('PyCharm')
     load_config()
+    # Авторизуемся как сообщество
+    vk = vk_api.VkApi(token=token)
+    # Работа с сообщениями
+    longpoll = VkLongPoll(vk)
+
+    # Основной цикл
+    for event in longpoll.listen():
+
+        # Если пришло новое сообщение
+        if event.type == VkEventType.MESSAGE_NEW:
+
+            # Если оно имеет метку для меня( то есть бота)
+            if event.to_me:
+
+                # Сообщение от пользователя
+                request = event.text
+
+                # Каменная логика ответа
+                if request == "привет":
+                    write_msg(vk, event.user_id, "Хай")
+                elif request == "пока":
+                    write_msg(vk, event.user_id, "Пока((")
+                else:
+                    write_msg(vk, event.user_id, "Не поняла вашего ответа...")
 
 
-def write_msg(user_id, message):
+def write_msg(vk, user_id, message):
     """
     Send message to VK user
+    :param vk: API session
     :param user_id: ID of VK user
     :param message: String of message to send
     :return:
     """
+    vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': time.time_ns()})
 
-    vk.method('messages.send', {'user_id': user_id, 'message': message})
 
 
-# Авторизуемся как сообщество
-vk = vk_api.VkApi(token=token)
 
-# Работа с сообщениями
-'''longpoll = VkLongPoll(vk)
-
-# Основной цикл
-for event in longpoll.listen():
-
-    # Если пришло новое сообщение
-    if event.type == VkEventType.MESSAGE_NEW:
-
-        # Если оно имеет метку для меня( то есть бота)
-        if event.to_me:
-
-            # Сообщение от пользователя
-            request = event.text
-
-            # Каменная логика ответа
-            if request == "привет":
-                write_msg(event.user_id, "Хай")
-            elif request == "пока":
-                write_msg(event.user_id, "Пока((")
-            else:
-                write_msg(event.user_id, "Не поняла вашего ответа...")
-'''

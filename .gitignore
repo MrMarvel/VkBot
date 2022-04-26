@@ -9,7 +9,7 @@ gen
 idea/*
 
 # Configuration file
-config.ini
+data/config.ini
 
 ### Gradle template
 .gradle
@@ -36,3 +36,6 @@ docs/build/*
 
 # dist
 dist/
+
+# установка пакета
+*.egg-info
