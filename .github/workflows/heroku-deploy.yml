@@ -17,3 +17,5 @@ jobs:
           heroku_app_name: "queue-vk-bot-mrmarvel" #Must be unique in Heroku
           heroku_email: "seregakkk999@yandex.ru"
           remote_branch: "feature/docker"
+        env:
+          HD_TOKEN: ${{secrets.VK_TOKEN}}

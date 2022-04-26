@@ -1,1 +1,1 @@
-bot: python -m src.queue_vk_bot_mrmarvel
+worker: python -m src.queue_vk_bot_mrmarvel

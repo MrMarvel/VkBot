@@ -5,6 +5,7 @@ import time
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 import os
+import sys
 
 from .book import *
 
@@ -76,7 +77,12 @@ def run():
     print("Absolute path:", os.path.abspath(''))
 
     print_hi('PyCharm')
-    load_config()
+    global token
+    try:
+        pass
+        #load_config()
+    except FileNotFoundError:
+        token = os.environ.get('TOKEN')
     # Авторизуемся как сообщество
     vk = vk_api.VkApi(token=token)
     # Работа с сообщениями
@@ -112,7 +118,3 @@ def write_msg(vk, user_id, message):
     :return:
     """
     vk.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': time.time_ns()})
-
-
-
-
