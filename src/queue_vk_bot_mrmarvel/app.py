@@ -80,7 +80,7 @@ def run():
     global token
     try:
         pass
-        #load_config()
+        load_config()  # DEPRECATION because of Heroku env input
     except FileNotFoundError:
         pass
     token = os.environ.get('TOKEN')
