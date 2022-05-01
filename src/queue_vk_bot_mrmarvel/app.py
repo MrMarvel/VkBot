@@ -83,7 +83,6 @@ def run_cycle_on_chats(vk: VkApi) -> None:
 
     try:
         # Работа с сообщениями из бесед от имени ГРУППЫ
-        bot_group_id: Final = 209160825
         longpoll_chat = VkBotLongPoll(vk, group_id=bot_group_id)
         # Основной цикл
         for event in longpoll_chat.listen():
@@ -150,6 +149,9 @@ def run_cycle_to_send_msg() -> None:
         print("Sending cycle stopped working!")
 
 
+bot_group_id: int
+
+
 def run():
     """
     Отправная точка работы программы
@@ -165,6 +167,8 @@ def run():
         pass
     if gl_vars.token is None:
         gl_vars.token = os.environ.get('TOKEN')
+    global bot_group_id
+    bot_group_id = os.environ.get('BOT_GROUP_ID')  # 209160825
     # Авторизуемся как сообщество
     global vk
     vk = VkApi(token=gl_vars.token)

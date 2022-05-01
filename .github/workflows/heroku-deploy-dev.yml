@@ -19,4 +19,5 @@ jobs:
           remote_branch: "dev"
         env:
           HD_TOKEN: ${{secrets.VK_TOKEN}}
+          HD_BOT_GROUP_ID: ${{secrets.BOT_GROUP_ID}}
           HD_RANDOM_DATA: "Hello"
