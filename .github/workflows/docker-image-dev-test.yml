@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker DEV Image CI
 
 on:
   push:
@@ -14,5 +14,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag queue-vk-bot:$(date +%s)
+    - name: Build the DEV VERSION Docker image
+      run: docker build . --file Dockerfile --tag queue-vk-bot-dev:$(date +%s)

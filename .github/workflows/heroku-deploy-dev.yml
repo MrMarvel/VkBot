@@ -1,10 +1,10 @@
-name: Deploy to Heroku
+name: Deploy DEV VERSION to Heroku
 
 on:
   push:
     branches:
-      - master # Changing the branch here would also work
-      - feature/docker
+      #- main # Changing the branch here would also work
+      - dev
 
 jobs:
   build:
@@ -16,7 +16,7 @@ jobs:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "queue-vk-bot-mrmarvel" #Must be unique in Heroku
           heroku_email: "seregakkk999@yandex.ru"
-          remote_branch: "feature/docker"
+          remote_branch: "dev"
         env:
           HD_TOKEN: ${{secrets.VK_TOKEN}}
           HD_RANDOM_DATA: "Hello"
