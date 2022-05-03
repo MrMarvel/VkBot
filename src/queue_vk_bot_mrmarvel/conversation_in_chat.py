@@ -1,12 +1,13 @@
 import random
 from enum import Enum, auto
-from queue import Queue
 from typing import Final
 
+from .chat_i import IChat
+from .chat_user import ChatUser
 from .gl_vars import DEFAULT_BOT_PREFIX, pipeline_to_send_msg
 
 
-class RelationshipInChat:
+class ConversationInChat:
     """
     Отношение пользователя с ботом, описывает состояния поведения в чатах.
     По сути автомат.
@@ -15,12 +16,17 @@ class RelationshipInChat:
     class _CommunicationState(Enum):
         will_start_communicate = auto(),
         after_start_message_printed = auto(),
+        queue_in_chat_and_will_start_communicate = auto(),
+        communication_will_end = auto(),
 
-    def __init__(self, user_id: int, chat_id: int):
-        self.__user_id: Final = user_id
+    def __init__(self, user: ChatUser, chat: IChat):
+        self.__user_id: Final = user.user_id
         self.__state = self._CommunicationState.will_start_communicate
-        self.__chat_id: int | None = chat_id
+        self.__chat_id: int = chat.chat_id
+        self.__chat: IChat = chat
+        self.__user: ChatUser = user
         self.__bot_prefix = DEFAULT_BOT_PREFIX
+        self.__user_cmds: list[int] = list()
 
     @property
     def bot_prefix(self):
@@ -73,6 +79,45 @@ class RelationshipInChat:
                                             f"Доступны следующий суб-команды:\n"
                                             f"change {{новый префикс}}")
                     return
+                if cmd == "queue" or cmd == "q":
+                    if len(cmd_args) > 1:
+                        sub_cmd = cmd_args[1]
+                        if sub_cmd == "create" or sub_cmd == "new":
+                            q_args = cmd_args[2:]
+                            self.__chat.user_wants_to_create_queue(user_id=self.__user_id)
+                        elif sub_cmd == "join" or sub_cmd == "j":
+                            if self.__chat.is_queue_running:
+                                q_args = cmd_args[2:]
+                                pos_in_queue = self.__chat.user_wants_to_join_to_queue(user=self.__user)
+                                if pos_in_queue is None:
+                                    self.__send_message("Вы уже в очереди!")
+                                else:
+                                    self.__send_message(f"Вы встали в очередь {pos_in_queue}ым!")
+                            else:
+                                self.__send_message("Невозможно подключится к несуществующей очереди!")
+                        elif sub_cmd == "skip" or sub_cmd == "next":
+                            # Следующий по очереди
+                            if self.__chat.is_queue_running:
+                                user = self.__chat.user_wants_to_force_next_queue(user=self.__user)
+                                if user is not None:
+                                    next_user = self.__chat.next_on_queue()
+                                    if next_user is not None:
+                                        msg = f"Твоя очередь, @id{next_user.user_id}!"
+                                        next_user_after_next_user = self.__chat.next_on_queue(offset=1)
+                                        if next_user_after_next_user is not None:
+                                            msg += (f"\n@id{next_user_after_next_user.user_id}, ты идёшь "
+                                                    f"после него.")
+                                        self.__send_message(msg)
+                                    else:
+                                        self.__send_message(f"Очередь опустела, чтоб закрыть очередь "
+                                                            f"{self.__bot_prefix}q close")
+                            else:
+                                self.__send_message("Очередь не запущена!")
+                        else:
+                            self.__send_message(f"Ожидалось create|new, join|j, skip|next, но получил {sub_cmd}.")
+                    else:
+                        self.__chat.send_queue_list()
+                    return
 
             self.__send_idk_msg_to_chat()  # Не одна команда не сработала
             return
@@ -83,6 +128,9 @@ class RelationshipInChat:
                 pass
             case _:
                 pass
+
+    def __end_conversation(self):
+        self.__state = self.__state.communication_will_end
 
     def __send_cap_msg(self) -> None:
         """
