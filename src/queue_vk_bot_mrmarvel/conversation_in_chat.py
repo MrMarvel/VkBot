@@ -83,11 +83,11 @@ class ConversationInChat:
                     if len(cmd_args) > 1:
                         sub_cmd = cmd_args[1]
                         if sub_cmd == "create" or sub_cmd == "new":
-                            q_args = cmd_args[2:]
+                            # q_args = cmd_args[2:]
                             self.__chat.user_wants_to_create_queue(user_id=self.__user_id)
                         elif sub_cmd == "join" or sub_cmd == "j":
                             if self.__chat.is_queue_running:
-                                q_args = cmd_args[2:]
+                                # q_args = cmd_args[2:]
                                 pos_in_queue = self.__chat.user_wants_to_join_to_queue(user=self.__user)
                                 if pos_in_queue is None:
                                     self.__send_message("Вы уже в очереди!")

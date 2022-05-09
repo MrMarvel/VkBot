@@ -5,14 +5,15 @@ import time
 from typing import Final
 
 from vk_api import VkApi
-from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
+from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, \
+    VkBotMessageEvent
 from vk_api.longpoll import VkLongPoll, VkEventType, Event
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+# Press Shift+F10 to execute it or replace it with your code. Press Double
+# Shift to search everywhere for classes, files, tool windows, actions,
+# and settings.
 from . import gl_vars
 from .chat import ChatLogic
-from .chat_user import ChatUser
 from .config_operations import load_config
 from .gl_vars import pipeline_to_send_msg
 from .relationship_in_ls import RelationshipInLS
@@ -29,8 +30,10 @@ def print_hi(name: str) -> None:
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
-relationships_in_ls: Final[dict[int, RelationshipInLS]] = dict()  # Состояния общения с пользователями в ЛС
-# Состояния общения с пользователями в чатах. {Чат1: {Пользователь1: Отношение, ...}, ...}
+relationships_in_ls: Final[dict[int, RelationshipInLS]] = dict()  #
+# Состояния общения с пользователями в ЛС
+# Состояния общения с пользователями в чатах.
+# {Чат1: {Пользователь1: Отношение, ...}, ...}
 relationships_in_chats: Final[dict[int, ChatLogic]] = dict()
 MAX_REQUESTS_PER_SECOND: Final = 3
 
@@ -53,7 +56,7 @@ def got_msg_from_user_to_bot_in_chat(vk: VkApi, chat_msg_event: VkBotMessageEven
         relationships_in_chats[chat_id] = chat_logic
 
     relation = chat_logic.get_relationship_with_user(user_id)
-    user = ChatUser.load_user(chat_id=chat_id, user_id=user_id)
+    # user = ChatUser.load_user(chat_id=chat_id, user_id=user_id)
     if relation is None:
         relation = chat_logic.start_relationship_with_user(user_id=user_id)
 

@@ -85,7 +85,7 @@ class ChatLogic(IChat):
         if self.__queue is None:
             return None
         queue_arr: list[ChatUser] = list(self.__queue.queue)
-        if len(queue_arr) < offset+1:
+        if len(queue_arr) < offset + 1:
             return None
         return queue_arr[offset]
 
@@ -132,13 +132,13 @@ class ChatLogic(IChat):
         return {
             "action": {
                 "type": "text",
-                "payload": "{\"Button\": \""+"1"+"\"}",
+                "payload": "{\"Button\": \"" + "1" + "\"}",
                 "label": f"{text}"
             },
             "color": f"{color}"
         }
 
     def __send_messange_with_keyboard(self, message: str, keyboard) -> None:
-        msg = {'chat_id': self.__chat_id, 'keyboard': keyboard}
+        # msg = {'chat_id': self.__chat_id, 'keyboard': keyboard}
         pipeline_to_send_msg.put_nowait((self.__chat_id, message, False))
         pass

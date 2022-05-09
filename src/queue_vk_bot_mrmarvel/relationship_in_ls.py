@@ -90,7 +90,7 @@ class RelationshipInLS:
               "Для того, начать чтобы помогать вам с друзьями создавать очереди в беседах, мне потребуется быть " \
               "добавленным в вашу беседе.\n" \
               "Помимо этого потребуются права на чтение и отправку сообщений."
-        self.__send
+        self.__send_message_to_chat(msg)
 
     def __send_idk_msg_to_place(self, is_private: bool = True) -> None:
         """
