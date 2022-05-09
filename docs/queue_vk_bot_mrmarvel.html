@@ -1,0 +1,465 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>queue_vk_bot_mrmarvel package &#8212; Queue VK Bot  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="src" href="modules.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="src"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Queue VK Bot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" accesskey="U">src</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">queue_vk_bot_mrmarvel package</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="queue-vk-bot-mrmarvel-package">
+<h1>queue_vk_bot_mrmarvel package<a class="headerlink" href="#queue-vk-bot-mrmarvel-package" title="Permalink to this headline">¶</a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-queue_vk_bot_mrmarvel.app">
+<span id="queue-vk-bot-mrmarvel-app-module"></span><h2>queue_vk_bot_mrmarvel.app module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.app" title="Permalink to this headline">¶</a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.bot_group_id">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">bot_group_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.bot_group_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.got_msg_from_user_to_bot_in_chat">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">got_msg_from_user_to_bot_in_chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">vk_api.vk_api.VkApi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_msg_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">vk_api.bot_longpoll.VkBotMessageEvent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.got_msg_from_user_to_bot_in_chat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Среагировать на полученное сообщение от пользователя.
+:param vk: ВК
+:param chat_msg_event: Событие сообщения из беседы</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.got_msg_from_user_to_bot_in_ls">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">got_msg_from_user_to_bot_in_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">vk_api.vk_api.VkApi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ls_msg_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">vk_api.longpoll.Event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.got_msg_from_user_to_bot_in_ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Среагировать на полученное сообщение от пользователя.
+:param vk: ВК
+:param ls_msg_event: Событие сообщения из лс</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.print_hi">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">print_hi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.print_hi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print hello to username
+:param name: Username
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.run">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отправная точка работы программы
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.run_cycle_on_chats">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">run_cycle_on_chats</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">vk_api.vk_api.VkApi</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.run_cycle_on_chats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Один из основных циклов программы.
+Обрабатывает сообщения из бесед.
+:param vk: ВК</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.run_cycle_on_ls">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">run_cycle_on_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">vk_api.vk_api.VkApi</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.run_cycle_on_ls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Один из основных циклов программы.
+Обрабатывает сообщения из ЛС
+:param vk: ВК</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.run_cycle_to_send_msg">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">run_cycle_to_send_msg</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.run_cycle_to_send_msg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.send_msg_packed_by_json">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">send_msg_packed_by_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message_json</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.send_msg_packed_by_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message to VK user
+:param vk: API session
+:param message_json: JSON сообщения</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.write_msg">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">write_msg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deliver_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_private</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.write_msg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message to VK user
+:param vk: API session
+:param deliver_id: ID ВК чата или пользователя
+:param message: String of message to send
+:param is_private: 1 - личный чат 0 - беседа
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.write_msg_to_chat">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">write_msg_to_chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.write_msg_to_chat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message to VK user
+:param vk: API session
+:param chat_id: ID ВК чата
+:param message: String of message to send</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.app.write_msg_to_user">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.app.</span></span><span class="sig-name descname"><span class="pre">write_msg_to_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vk</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.app.write_msg_to_user" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send message to VK user
+:param vk: API session
+:param user_id: ID ВК пользователя
+:param message: String of message to send
+:return:</p>
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.book">
+<span id="queue-vk-bot-mrmarvel-book-module"></span><h2>queue_vk_bot_mrmarvel.book module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.book" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.book.Book">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.book.</span></span><span class="sig-name descname"><span class="pre">Book</span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.book.Book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.book.Book.print_a">
+<span class="sig-name descname"><span class="pre">print_a</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.book.Book.print_a" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.chat">
+<span id="queue-vk-bot-mrmarvel-chat-module"></span><h2>queue_vk_bot_mrmarvel.chat module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.chat" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.chat.</span></span><span class="sig-name descname"><span class="pre">ChatLogic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_i.IChat" title="queue_vk_bot_mrmarvel.chat_i.IChat"><code class="xref py py-class docutils literal notranslate"><span class="pre">queue_vk_bot_mrmarvel.chat_i.IChat</span></code></a></p>
+<p>Описывает все отношения пользователей в чате беседы с ботом.
+Существует пока есть очередь, либо кто-то недописал команды (уязвимость).</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.chat_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat_id</span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.chat_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.get_relationship_with_user">
+<span class="sig-name descname"><span class="pre">get_relationship_with_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat" title="queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat"><span class="pre">queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.get_relationship_with_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.is_queue_running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_queue_running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.is_queue_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.next_on_queue">
+<span class="sig-name descname"><span class="pre">next_on_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.next_on_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.send_queue_list">
+<span class="sig-name descname"><span class="pre">send_queue_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.send_queue_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Отправляет в чат беседы очередь.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.start_relationship_with_user">
+<span class="sig-name descname"><span class="pre">start_relationship_with_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat" title="queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat"><span class="pre">queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat</span></a></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.start_relationship_with_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.user_wants_to_create_queue">
+<span class="sig-name descname"><span class="pre">user_wants_to_create_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.user_wants_to_create_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.user_wants_to_force_next_queue">
+<span class="sig-name descname"><span class="pre">user_wants_to_force_next_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.user_wants_to_force_next_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat.ChatLogic.user_wants_to_join_to_queue">
+<span class="sig-name descname"><span class="pre">user_wants_to_join_to_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat.ChatLogic.user_wants_to_join_to_queue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Пользователь требует добавить его в очередь
+:param user: Пользователь
+:return: Номер позиции в очереди (от 1), Вернёт None если уже в очереди</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.chat_i">
+<span id="queue-vk-bot-mrmarvel-chat-i-module"></span><h2>queue_vk_bot_mrmarvel.chat_i module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.chat_i" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.chat_i.</span></span><span class="sig-name descname"><span class="pre">IChat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.chat_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat_id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.chat_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.is_queue_running">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_queue_running</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.is_queue_running" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.next_on_queue">
+<span class="sig-name descname"><span class="pre">next_on_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.next_on_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.send_queue_list">
+<span class="sig-name descname"><span class="pre">send_queue_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.send_queue_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.user_wants_to_create_queue">
+<span class="sig-name descname"><span class="pre">user_wants_to_create_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.user_wants_to_create_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.user_wants_to_force_next_queue">
+<span class="sig-name descname"><span class="pre">user_wants_to_force_next_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.user_wants_to_force_next_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_i.IChat.user_wants_to_join_to_queue">
+<span class="sig-name descname"><span class="pre">user_wants_to_join_to_queue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_i.IChat.user_wants_to_join_to_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.chat_user">
+<span id="queue-vk-bot-mrmarvel-chat-user-module"></span><h2>queue_vk_bot_mrmarvel.chat_user module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.chat_user" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_user.ChatUser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.chat_user.</span></span><span class="sig-name descname"><span class="pre">ChatUser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_user.ChatUser.chat_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">chat_id</span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser.chat_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_user.ChatUser.is_able_to_create_queue">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_able_to_create_queue</span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser.is_able_to_create_queue" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_user.ChatUser.load_user">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">load_user</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">chat_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser.load_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.chat_user.ChatUser.user_id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">user_id</span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser.user_id" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.config_operations">
+<span id="queue-vk-bot-mrmarvel-config-operations-module"></span><h2>queue_vk_bot_mrmarvel.config_operations module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.config_operations" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.config_operations.load_config">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.config_operations.</span></span><span class="sig-name descname"><span class="pre">load_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.config_operations.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load main config
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.config_operations.prepare_config">
+<span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.config_operations.</span></span><span class="sig-name descname"><span class="pre">prepare_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.config_operations.prepare_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prepare config before loading.
+Adding default values instead of leak of them.
+:return:</p>
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.conversation_in_chat">
+<span id="queue-vk-bot-mrmarvel-conversation-in-chat-module"></span><h2>queue_vk_bot_mrmarvel.conversation_in_chat module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.conversation_in_chat" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.conversation_in_chat.</span></span><span class="sig-name descname"><span class="pre">ConversationInChat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_user.ChatUser" title="queue_vk_bot_mrmarvel.chat_user.ChatUser"><span class="pre">queue_vk_bot_mrmarvel.chat_user.ChatUser</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">chat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#queue_vk_bot_mrmarvel.chat_i.IChat" title="queue_vk_bot_mrmarvel.chat_i.IChat"><span class="pre">queue_vk_bot_mrmarvel.chat_i.IChat</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Отношение пользователя с ботом, описывает состояния поведения в чатах.
+По сути автомат.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat.bot_prefix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">bot_prefix</span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat.bot_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat.change_prefix">
+<span class="sig-name descname"><span class="pre">change_prefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat.change_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat.react_to_msg_from_chat">
+<span class="sig-name descname"><span class="pre">react_to_msg_from_chat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.conversation_in_chat.ConversationInChat.react_to_msg_from_chat" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – Полученное сообщение из чата</p></li>
+<li><p><strong>msg</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel.gl_vars">
+<span id="queue-vk-bot-mrmarvel-gl-vars-module"></span><h2>queue_vk_bot_mrmarvel.gl_vars module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.gl_vars" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-queue_vk_bot_mrmarvel.relationship_in_ls">
+<span id="queue-vk-bot-mrmarvel-relationship-in-ls-module"></span><h2>queue_vk_bot_mrmarvel.relationship_in_ls module<a class="headerlink" href="#module-queue_vk_bot_mrmarvel.relationship_in_ls" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.relationship_in_ls.RelationshipInLS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">queue_vk_bot_mrmarvel.relationship_in_ls.</span></span><span class="sig-name descname"><span class="pre">RelationshipInLS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">user_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipeline_to_send_msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">queue.Queue</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#queue_vk_bot_mrmarvel.relationship_in_ls.RelationshipInLS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Отношение пользователя с ботом, описывает состояния поведения в личных сообщениях.
+По сути автомат.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.relationship_in_ls.RelationshipInLS.is_useless">
+<span class="sig-name descname"><span class="pre">is_useless</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.relationship_in_ls.RelationshipInLS.is_useless" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="queue_vk_bot_mrmarvel.relationship_in_ls.RelationshipInLS.react_to_msg_from_ls">
+<span class="sig-name descname"><span class="pre">react_to_msg_from_ls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">msg</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_chat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#queue_vk_bot_mrmarvel.relationship_in_ls.RelationshipInLS.react_to_msg_from_ls" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>msg</strong> – Полученное сообщение из ЛС</p></li>
+<li><p><strong>from_chat</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-queue_vk_bot_mrmarvel">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-queue_vk_bot_mrmarvel" title="Permalink to this headline">¶</a></h2>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">queue_vk_bot_mrmarvel package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.app">queue_vk_bot_mrmarvel.app module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.book">queue_vk_bot_mrmarvel.book module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.chat">queue_vk_bot_mrmarvel.chat module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.chat_i">queue_vk_bot_mrmarvel.chat_i module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.chat_user">queue_vk_bot_mrmarvel.chat_user module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.config_operations">queue_vk_bot_mrmarvel.config_operations module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.conversation_in_chat">queue_vk_bot_mrmarvel.conversation_in_chat module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.gl_vars">queue_vk_bot_mrmarvel.gl_vars module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel.relationship_in_ls">queue_vk_bot_mrmarvel.relationship_in_ls module</a></li>
+<li><a class="reference internal" href="#module-queue_vk_bot_mrmarvel">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="modules.html"
+                          title="previous chapter">src</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/queue_vk_bot_mrmarvel.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="modules.html" title="src"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Queue VK Bot  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="modules.html" >src</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">queue_vk_bot_mrmarvel package</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2022, Kulikov Sergey Sergeyevich.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.5.0.
+    </div>
+  </body>
+</html>

@@ -20,14 +20,12 @@ setup(
         "Bug Tracker": "https://github.com/SADT-Boting/VkBot/issues",
     },
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    install_requires=["setuptools~=61.2.0",
-                      "vk_api~=11.9.7",
-                      "sphinx~=4.5.0"],
+    install_requires=["vk_api==11.9.8"],
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.9"
 )

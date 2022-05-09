@@ -1,3 +1,4 @@
+import os
 import random
 import threading
 import time
@@ -6,7 +7,6 @@ from typing import Final
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
 from vk_api.longpoll import VkLongPoll, VkEventType, Event
-import os
 
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
@@ -14,8 +14,7 @@ from . import gl_vars
 from .chat import ChatLogic
 from .chat_user import ChatUser
 from .config_operations import load_config
-from .gl_vars import pipeline_to_send_msg, token
-from .conversation_in_chat import ConversationInChat
+from .gl_vars import pipeline_to_send_msg
 from .relationship_in_ls import RelationshipInLS
 
 
@@ -177,8 +176,12 @@ def run():
         pass
     if gl_vars.token is None:
         gl_vars.token = os.environ.get('TOKEN')
+        if gl_vars.token is None:
+            raise Exception("TOKEN is not in environment!")
     global bot_group_id
     bot_group_id = os.environ.get('BOT_GROUP_ID')  # 209160825
+    if bot_group_id is None:
+        raise Exception("BOT_GROUP_ID is not in environment!")
     # Авторизуемся как сообщество
     global vk
     vk = VkApi(token=gl_vars.token)

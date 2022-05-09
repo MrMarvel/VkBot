@@ -29,9 +29,7 @@ gradle-app.setting
 # gradle/wrapper/gradle-wrapper.properties
 
 # docs
-!docs/build/
-docs/build/*
-!docs/build/html/
+docs/.doctrees/
 **/__pycache__
 
 # dist

@@ -1,2 +1,4 @@
 vk_api==11.9.8
 sphinx==4.5.0
+sphinx-material==0.0.35
+setuptools==62.1.0
