@@ -2,9 +2,12 @@ import random
 from enum import Enum, auto
 from typing import Final
 
+from vk_api import VkApi
+
 from .chat_i import IChat
 from .chat_user import ChatUser
 from .gl_vars import DEFAULT_BOT_PREFIX, pipeline_to_send_msg
+from .queue_controller import QueueModel, QueueController, ChatView
 
 
 class ConversationInChat:
@@ -19,7 +22,7 @@ class ConversationInChat:
         queue_in_chat_and_will_start_communicate = auto(),
         communication_will_end = auto(),
 
-    def __init__(self, user: ChatUser, chat: IChat):
+    def __init__(self, user: ChatUser, chat: IChat, vk: VkApi):
         self.__user_id: Final = user.user_id
         self.__state = self._CommunicationState.will_start_communicate
         self.__chat_id: int = chat.chat_id
@@ -27,6 +30,10 @@ class ConversationInChat:
         self.__user: ChatUser = user
         self.__bot_prefix = DEFAULT_BOT_PREFIX
         self.__user_cmds: list[int] = list()
+        self._vk = vk
+        self._queue_model = None
+        self._queue_controller = None
+        self._queue_view = None
 
     @property
     def bot_prefix(self):
@@ -84,7 +91,12 @@ class ConversationInChat:
                         sub_cmd = cmd_args[1]
                         if sub_cmd == "create" or sub_cmd == "new":
                             # q_args = cmd_args[2:]
-                            self.__chat.user_wants_to_create_queue(user_id=self.__user_id)
+                            self._queue_model = QueueModel(chat_id=self.__chat_id)
+                            self._queue_controller = QueueController(queue_model=self._queue_model)
+                            self._queue_view = ChatView(queue_controller=self._queue_controller,
+                                                        queue_model=self._queue_model,
+                                                        vk=self._vk)
+                            # self.__chat.user_wants_to_create_queue(user_id=self.__user_id)
                         elif sub_cmd == "join" or sub_cmd == "j":
                             if self.__chat.is_queue_running:
                                 # q_args = cmd_args[2:]
@@ -115,8 +127,11 @@ class ConversationInChat:
                                 self.__send_message("Очередь не запущена!")
                         else:
                             self.__send_message(f"Ожидалось create|new, join|j, skip|next, но получил {sub_cmd}.")
+                    elif self._queue_view is not None:
+                        self._queue_view.manual_refresh()
                     else:
-                        self.__chat.send_queue_list()
+                        self.__send_message(f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")
+                        # self.__chat.send_queue_list()
                     return
 
             self.__send_idk_msg_to_chat()  # Не одна команда не сработала
@@ -159,7 +174,7 @@ class ConversationInChat:
         """
         Общее сообщение
         """
-        rand_msgs = "К сожелению я не понял, что вы имели ввиду конкретно.", \
+        rand_msgs = "К сожелению я не понял, что вы имели ввиду.", \
                     "Мяу?\nА вы поняли, что я имел в виду? Вот и я также вас.", \
                     "Хммм.. даже не знаю что сказать."
         pipeline_to_send_msg.put_nowait((self.__chat_id, random.choice(rand_msgs), False))

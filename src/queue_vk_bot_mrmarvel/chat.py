@@ -2,6 +2,8 @@ import json
 from enum import Enum, auto
 from queue import Queue
 
+from vk_api import VkApi
+
 from .chat_i import IChat
 from .chat_user import ChatUser
 from .conversation_in_chat import ConversationInChat
@@ -28,11 +30,12 @@ class ChatLogic(IChat):
         queue_in_progress = auto(),
         queue_will_end = auto()
 
-    def __init__(self, chat_id: int):
+    def __init__(self, chat_id: int, vk: VkApi):
         self.__chat_id = chat_id
         self.__queue_state = self._QueueState.no_queue_running
         self.__relations_in_chat: [int, ConversationInChat] = dict()
         self.__queue: Queue[ChatUser] | None = None
+        self._vk = vk
 
     def get_relationship_with_user(self, user_id: int) -> ConversationInChat | None:
         return self.__relations_in_chat.get(user_id, None)
@@ -41,7 +44,7 @@ class ChatLogic(IChat):
         r = self.__relations_in_chat.get(user_id, None)
         if r is None:
             user = ChatUser.load_user(user_id=user_id, chat_id=self.__chat_id)
-            r = ConversationInChat(user=user, chat=self)
+            r = ConversationInChat(user=user, chat=self, vk=self._vk)
             self.__relations_in_chat[user_id] = r
         return r
 

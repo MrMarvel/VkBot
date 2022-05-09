@@ -15,7 +15,7 @@ from vk_api.longpoll import VkLongPoll, VkEventType, Event
 from . import gl_vars
 from .chat import ChatLogic
 from .config_operations import load_config
-from .gl_vars import pipeline_to_send_msg
+from .gl_vars import pipeline_to_send_msg, pipeline_to_send_requests
 from .relationship_in_ls import RelationshipInLS
 
 
@@ -52,7 +52,7 @@ def got_msg_from_user_to_bot_in_chat(vk: VkApi, chat_msg_event: VkBotMessageEven
 
     chat_logic = relationships_in_chats.get(chat_id, None)
     if chat_logic is None:
-        chat_logic = ChatLogic(chat_id=chat_id)
+        chat_logic = ChatLogic(chat_id=chat_id, vk=vk)
         relationships_in_chats[chat_id] = chat_logic
 
     relation = chat_logic.get_relationship_with_user(user_id)
@@ -137,23 +137,51 @@ def run_cycle_on_ls(vk: VkApi) -> None:
 vk: VkApi | None = None
 
 
+def run_iteration_to_send_requests() -> bool:
+    # print("REQ")
+    if pipeline_to_send_requests.empty():
+        return False
+    raise NotImplementedError
+
+
+def run_iteration_to_send_msg() -> bool:
+    # print("MSG")
+    if pipeline_to_send_msg.empty():
+        return False
+    id, msg, is_private = pipeline_to_send_msg.get(block=True)
+    try:
+        if type(msg) is dict:
+            send_msg_packed_by_json(vk=vk, message_json=msg)
+        elif type(msg) is str:
+            if is_private:
+                write_msg_to_user(vk=vk, user_id=id, message=msg)
+            else:
+                write_msg_to_chat(vk=vk, chat_id=id, message=msg)
+    except Exception as e:
+        print(f"ERRORED sending a message\n{vk, id, msg, is_private}")
+        raise e
+    return True
+
+
 def run_cycle_to_send_msg() -> None:
     print("Sending cycle is running!")
     min_time_to_wait_before_next_request: Final = 0.334
-
+    iter_pos = 1
+    max_iter_pos = 2
     try:
         while 1:
-            id, msg, is_private = pipeline_to_send_msg.get(block=True)
+            iter_pos = (iter_pos + 1) % max_iter_pos
             try:
-                if type(msg) is dict:
-                    send_msg_packed_by_json(vk=vk, message_json=msg)
-                elif type(msg) is str:
-                    if is_private:
-                        write_msg_to_user(vk=vk, user_id=id, message=msg)
-                    else:
-                        write_msg_to_chat(vk=vk, chat_id=id, message=msg)
+                for _ in range(max_iter_pos):
+                    match iter_pos:
+                        case 0:
+                            if run_iteration_to_send_msg():
+                                break
+                        case 1:
+                            if run_iteration_to_send_requests():
+                                break
+                    iter_pos = (iter_pos + 1) % max_iter_pos
             except Exception as e:
-                print(f"ERRORED sending a message\n{vk, id, msg, is_private}")
                 print(e)
                 break
             time.sleep(min_time_to_wait_before_next_request + random.random() * 0.1)
@@ -162,12 +190,12 @@ def run_cycle_to_send_msg() -> None:
 
 
 bot_group_id: int
+thread_chats: threading.Thread | None = None
 
 
 def run():
     """
-    Отправная точка работы программы
-    :return:
+    Отправная точка работы программы.
     """
     print("Absolute path:", os.path.abspath(''))
 
@@ -190,7 +218,8 @@ def run():
     vk = VkApi(token=gl_vars.token)
     # Основной цикл
     threading.Thread(target=run_cycle_to_send_msg, daemon=True).start()
-    threading.Thread(target=run_cycle_on_chats, args=(vk,), daemon=True).start()
+    global thread_chats
+    thread_chats = threading.Thread(target=run_cycle_on_chats, args=(vk,), daemon=True).start()
     thread_ls = threading.Thread(target=run_cycle_on_ls, args=(vk,), daemon=True)
     thread_ls.start()
     thread_ls.join()
