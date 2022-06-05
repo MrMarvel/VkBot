@@ -4,13 +4,12 @@ from typing import Final
 
 from vk_api import VkApi
 
-from .chat_i import IChat
-from .chat_user import ChatUser
-from .gl_vars import DEFAULT_BOT_PREFIX, pipeline_to_send_msg
-from .queue_controller import QueueModel, QueueController, ChatView
+from queue_vk_bot_mrmarvel.utils.chat_i import IChat
+from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
+from queue_vk_bot_mrmarvel.gl_vars import DEFAULT_BOT_PREFIX, pipeline_to_send_msg
 
 
-class ConversationInChat:
+'''class RelationshipInChat:
     """
     Отношение пользователя с ботом, описывает состояния поведения в чатах.
     По сути автомат.
@@ -186,4 +185,4 @@ class ConversationInChat:
         self.__send_message_to_chat(msg)
 
     def __send_message_to_chat(self, msg: str):
-        pipeline_to_send_msg.put_nowait((self.__chat_id, msg, False))
+        pipeline_to_send_msg.put_nowait((self.__chat_id, msg, False))'''

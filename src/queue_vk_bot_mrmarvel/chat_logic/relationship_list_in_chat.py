@@ -4,10 +4,11 @@ from queue import Queue
 
 from vk_api import VkApi
 
-from .chat_i import IChat
-from .chat_user import ChatUser
-from .conversation_in_chat import ConversationInChat
-from .gl_vars import pipeline_to_send_msg
+from queue_vk_bot_mrmarvel.utils.bot_i import IBot
+from queue_vk_bot_mrmarvel.utils.chat_i import IChat
+from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
+from queue_vk_bot_mrmarvel.chat_logic.relationship_in_chat import RelationshipInChat
+from queue_vk_bot_mrmarvel.gl_vars import pipeline_to_send_msg
 
 
 class ChatLogic(IChat):
@@ -30,21 +31,22 @@ class ChatLogic(IChat):
         queue_in_progress = auto(),
         queue_will_end = auto()
 
-    def __init__(self, chat_id: int, vk: VkApi):
+    def __init__(self, bot: IBot,  chat_id: int, vk: VkApi):
+        self._bot = bot
         self.__chat_id = chat_id
         self.__queue_state = self._QueueState.no_queue_running
-        self.__relations_in_chat: [int, ConversationInChat] = dict()
+        self.__relations_in_chat: [int, RelationshipInChat] = dict()
         self.__queue: Queue[ChatUser] | None = None
         self._vk = vk
 
-    def get_relationship_with_user(self, user_id: int) -> ConversationInChat | None:
+    def get_relationship_with_user(self, user_id: int) -> RelationshipInChat | None:
         return self.__relations_in_chat.get(user_id, None)
 
-    def start_relationship_with_user(self, user_id: int) -> ConversationInChat:
+    def start_relationship_with_user(self, user_id: int) -> RelationshipInChat:
         r = self.__relations_in_chat.get(user_id, None)
         if r is None:
             user = ChatUser.load_user(user_id=user_id, chat_id=self.__chat_id)
-            r = ConversationInChat(user=user, chat=self, vk=self._vk)
+            r = RelationshipInChat(self._bot, user=user, chat=self)
             self.__relations_in_chat[user_id] = r
         return r
 
@@ -101,7 +103,7 @@ class ChatLogic(IChat):
         return True if self.__queue_state == self._QueueState.queue_in_progress else False
 
     def __send_message(self, messsage: str):
-        pipeline_to_send_msg.put_nowait((self.__chat_id, messsage, False))
+        self._bot.write_msg_to_chat(self.__chat_id, messsage, False)
 
     def send_queue_list(self) -> None:
         """

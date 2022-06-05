@@ -1,6 +1,16 @@
 queue\_vk\_bot\_mrmarvel package
 ================================
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   queue_vk_bot_mrmarvel.chat_logic
+   queue_vk_bot_mrmarvel.controllers
+   queue_vk_bot_mrmarvel.utils
+
 Submodules
 ----------
 
@@ -20,30 +30,6 @@ queue\_vk\_bot\_mrmarvel.book module
    :undoc-members:
    :show-inheritance:
 
-queue\_vk\_bot\_mrmarvel.chat module
-------------------------------------
-
-.. automodule:: queue_vk_bot_mrmarvel.chat
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-queue\_vk\_bot\_mrmarvel.chat\_i module
----------------------------------------
-
-.. automodule:: queue_vk_bot_mrmarvel.chat_i
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-queue\_vk\_bot\_mrmarvel.chat\_user module
-------------------------------------------
-
-.. automodule:: queue_vk_bot_mrmarvel.chat_user
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 queue\_vk\_bot\_mrmarvel.config\_operations module
 --------------------------------------------------
 
@@ -52,26 +38,10 @@ queue\_vk\_bot\_mrmarvel.config\_operations module
    :undoc-members:
    :show-inheritance:
 
-queue\_vk\_bot\_mrmarvel.conversation\_in\_chat module
-------------------------------------------------------
-
-.. automodule:: queue_vk_bot_mrmarvel.conversation_in_chat
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 queue\_vk\_bot\_mrmarvel.gl\_vars module
 ----------------------------------------
 
 .. automodule:: queue_vk_bot_mrmarvel.gl_vars
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-queue\_vk\_bot\_mrmarvel.relationship\_in\_ls module
-----------------------------------------------------
-
-.. automodule:: queue_vk_bot_mrmarvel.relationship_in_ls
    :members:
    :undoc-members:
    :show-inheritance:
