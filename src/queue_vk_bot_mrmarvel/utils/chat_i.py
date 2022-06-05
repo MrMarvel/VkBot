@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from .chat_user import ChatUser
+from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
 
 
 class IChat(Protocol):
@@ -26,4 +26,7 @@ class IChat(Protocol):
         raise NotImplementedError
 
     def next_on_queue(self, offset: int = 0) -> ChatUser | None:
+        raise NotImplementedError
+
+    def show_queue(self):
         raise NotImplementedError

@@ -1,45 +1,22 @@
 import inspect
-import time
-import weakref
-from _weakref import ReferenceType
-from abc import ABCMeta, abstractmethod
 from queue import Queue, Empty
-from typing import Any
+from time import time_ns
 
-from vk_api import VkApi
+from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
 
 
 class QueueController:
     """
-    Контроллер из паттерна MVC.
+    Контроллер и модель из паттерна MVC.
     Управляет очередями в чате.
+    1 контроллер = 1 очередь
     """
 
-    def __init__(self, queue_model: 'QueueModel'):
-        self._queue_model = queue_model
-
-
-class ObserverModel(metaclass=ABCMeta):
-
-    def __init__(self):
-        self._observers: list[ReferenceType[QueueObserver]] = list()
-
-    def add_observer(self, obs: 'QueueObserver') -> None:
-        self._observers.append(weakref.ref(obs))
-
-    def remove_observer(self, obs: 'QueueObserver') -> None:
-        self._observers.remove(obs)
-
-    def notify_observers(self) -> None:
-        for obs in self._observers:
-            obs.model_is_changed()
-
-
-class QueueModel(ObserverModel):
-    """
-    Модель из паттерна MVC.
-    Хранит информацию об очередях.
-    """
+    def __init__(self, chat_id):
+        super().__init__()
+        self._queue_list_message_id = None
+        self._queue = Queue()
+        self._chat_id = chat_id
 
     @property
     def queue(self) -> list:
@@ -49,41 +26,47 @@ class QueueModel(ObserverModel):
     def chat_id(self) -> int:
         return self._chat_id
 
-    def __init__(self, chat_id: int):
-        super().__init__()
-        self._chat_id = chat_id
-        self._queue = Queue()
-
-    def put(self, elem: Any) -> None:
+    def put(self, elem: ChatUser) -> int | None:
+        if elem in self._queue:
+            return None
         self._queue.put(elem)
-        self.notify_observers()
+        return len(self._queue.queue)
 
-    def pop(self) -> Any | None:
+    def pop(self) -> ChatUser | None:
         q = self._queue
         try:
             elem = q.get()
-            self.notify_observers()
             return elem
         except Empty:
             pass
         return None
 
+    def skip_force(self) -> ChatUser | None:
+        return self.pop()
 
-class QueueObserver(metaclass=ABCMeta):
-    """
-    Наблюдатель из паттерна Наблюдатель для паттерна MVC.
-    Наблюдает за параметрами очереди.
-    """
+    def get_next_on_queue(self) -> ChatUser | None:
+        queue = list(self._queue.queue)
+        if len(queue) < 2:
+            return None
+        return queue[1]
 
-    @abstractmethod
-    def model_is_changed(self):
-        """
-        Метод, который вызывается при измении модели
-        """
-        pass
+    def show_queue_list_message(self):
+        values = {"random_id": time_ns(),
+                  "chat_id": self._chat_id,
+                  "message": f"СПИСОК в чате {self._chat_id}"}
+        raise NotImplementedError
+        result = None
+        #result = self._vk.method(method="messages.send", values=values)
+        if type(result) is dict:
+            result: dict
+            message_id = result.get("message_id", None)
+            if message_id is None:
+                print(self.__class__.__name__, inspect.currentframe().f_code.co_name, "Непредвиденная ситуация")
+                return
+            message_id = int(message_id)
+            self._queue_list_message_id = message_id
 
-
-class ChatView(QueueObserver):
+'''class ChatView(Observer):
     """
     Вид из паттерна MVC.
     Отображает изменения позиций в очередях.
@@ -177,3 +160,4 @@ class ChatView(QueueObserver):
                 return
             message_id = int(message_id)
             self._user_go_message_id = message_id
+'''

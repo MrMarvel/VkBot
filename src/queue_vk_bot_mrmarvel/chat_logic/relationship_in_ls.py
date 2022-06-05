@@ -3,7 +3,7 @@ from enum import Enum, auto
 from queue import Queue
 from typing import Final
 
-from .gl_vars import DEFAULT_BOT_PREFIX, pipeline_to_send_msg
+from queue_vk_bot_mrmarvel.gl_vars import DEFAULT_BOT_PREFIX, pipeline_to_send_msg
 
 
 class RelationshipInLS:
