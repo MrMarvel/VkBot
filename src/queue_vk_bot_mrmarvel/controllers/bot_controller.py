@@ -1,5 +1,6 @@
 import time
 from threading import Thread
+from typing import Final
 
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
@@ -11,8 +12,10 @@ from queue_vk_bot_mrmarvel.controllers.request_controller import RequestControll
 from queue_vk_bot_mrmarvel.gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
 from queue_vk_bot_mrmarvel.chat_logic.relationship_in_ls import RelationshipInLS
 from queue_vk_bot_mrmarvel.utils.bot_i import IBot
+from deprecated import deprecated
 
 
+@deprecated
 def write_msg_to_user(vk, user_id, message):
     """
     Send message to VK user
@@ -25,8 +28,10 @@ def write_msg_to_user(vk, user_id, message):
     send_msg_packed_by_json(vk, msg)
 
 
+@deprecated
 def write_msg_to_chat(vk, chat_id, message) -> None:
     """
+    DEPRECATED
     Send message to VK user
     :param vk: API session
     :param chat_id: ID ВК чата
@@ -36,8 +41,10 @@ def write_msg_to_chat(vk, chat_id, message) -> None:
     send_msg_packed_by_json(vk, msg)
 
 
+@deprecated
 def send_msg_packed_by_json(vk, message_json) -> None:
     """
+    DEPRECATED
     Send message to VK user
     :param vk: API session
     :param message_json: JSON сообщения
@@ -49,6 +56,7 @@ def send_msg_packed_by_json(vk, message_json) -> None:
 
 def write_msg(vk, deliver_id, message, is_private: bool = True):
     """
+    DEPRECATED
     Send message to VK user
     :param vk: API session
     :param deliver_id: ID ВК чата или пользователя
@@ -63,11 +71,17 @@ def write_msg(vk, deliver_id, message, is_private: bool = True):
 
 
 def init_connection(token) -> VkApi | None:
-    # TODO
+    """
+    TODO
+    :param token:
+    :return:
+    """
     return None
 
 
 class BotController(IBot):
+    CHAT_ID_PREFIX: Final = 2000000000
+
     def __init__(self, vk: VkApi, bot_group_id: int):
         self._vk = vk
         self._bot_group_id = bot_group_id
@@ -82,10 +96,23 @@ class BotController(IBot):
         thread_ls.join()
 
     def create_queue_in_chat(self, chat_id) -> None:
+        """
+        TODO
+        :param chat_id:
+        :return:
+        """
         raise NotImplementedError
         pass
 
+    def show_next_in_queue_in_chat(self):
+        pass
+
     def get_queue_from_chat(self, chat_id) -> QueueController | None:
+        """
+        TODO
+        :param chat_id:
+        :return:
+        """
         raise NotImplementedError
         pass
 
@@ -114,9 +141,29 @@ class BotController(IBot):
         :param message_json: JSON сообщения
         """
         message_json['random_id'] = time.time_ns()
+        message_json['v'] = '5.131'
         request_method = 'messages.send'
-        return self._request_contr.got_to_send_request({'method': request_method, 'body': message_json})
+        return self._send_request({'method': request_method, 'body': message_json})
+        # return self._request_contr.got_to_send_request({'method': request_method, 'body': message_json})
         # self._vk.method('messages.send', message_json)
+
+    def _send_request(self, request: dict) -> dict | None:
+        """
+        Отправляет запросы в ВК.
+        :param request:
+        :return:
+        """
+        return self._request_contr.got_to_send_request(request=request)
+
+    def remove_messages_from_chat(self, message_ids: list[int], chat_id: int) -> dict | None:
+        body = {"peer_id": self.CHAT_ID_PREFIX + 1,
+                "cmids": ','.join(map(lambda x: str(x), message_ids)),
+                "delete_for_all": 1}
+        method = "messages.delete"
+        return self._send_request({"method": method, "body": body})
+
+    def remove_message_from_chat(self, message_id: int, chat_id: int) -> dict | None:
+        return self.remove_messages_from_chat([message_id], chat_id)
 
     def write_msg(self, deliver_id, message, is_private: bool = True):
         """
@@ -194,7 +241,7 @@ class BotController(IBot):
 
         chat_logic = relationships_in_chats.get(chat_id, None)
         if chat_logic is None:
-            chat_logic = ChatLogic(self, chat_id=chat_id, vk=self._vk)
+            chat_logic = ChatLogic(self, chat_id=chat_id)
             relationships_in_chats[chat_id] = chat_logic
 
         relation = chat_logic.get_relationship_with_user(user_id)

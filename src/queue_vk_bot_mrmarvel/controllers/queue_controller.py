@@ -1,6 +1,10 @@
+import copy
 import inspect
+import time
 from queue import Queue, Empty
 from time import time_ns
+
+from deprecated import deprecated
 
 from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
 
@@ -15,19 +19,27 @@ class QueueController:
     def __init__(self, chat_id):
         super().__init__()
         self._queue_list_message_id = None
-        self._queue = Queue()
+        self._queue = Queue[ChatUser]()
         self._chat_id = chat_id
 
     @property
     def queue(self) -> list:
-        return self._queue.queue.copy()
+        """
+        Получение копии очереди пользователей чата.
+        :return: Список
+        """
+        return copy.deepcopy(self._queue.queue)
+
+    @property
+    def empty(self) -> bool:
+        return len(self._queue.queue) == 0
 
     @property
     def chat_id(self) -> int:
         return self._chat_id
 
     def put(self, elem: ChatUser) -> int | None:
-        if elem in self._queue:
+        if elem in self._queue.queue:
             return None
         self._queue.put(elem)
         return len(self._queue.queue)
@@ -56,23 +68,29 @@ class QueueController:
                   "message": f"СПИСОК в чате {self._chat_id}"}
         raise NotImplementedError
         result = None
-        #result = self._vk.method(method="messages.send", values=values)
+        # result = self._vk.method(method="messages.send", values=values)
         if type(result) is dict:
             result: dict
-            message_id = result.get("message_id", None)
-            if message_id is None:
+            conversation_message_id = result.get("conversation_message_id", None)
+            if conversation_message_id is None:
                 print(self.__class__.__name__, inspect.currentframe().f_code.co_name, "Непредвиденная ситуация")
                 return
-            message_id = int(message_id)
-            self._queue_list_message_id = message_id
+            conversation_message_id = int(conversation_message_id)
+            self._queue_list_message_id = conversation_message_id
 
-'''class ChatView(Observer):
+    def notify_chat_next_in_queue(self):
+        pass
+
+
+'''
+@deprecated
+class ChatView:
     """
     Вид из паттерна MVC.
     Отображает изменения позиций в очередях.
     """
 
-    def __init__(self, queue_controller: QueueController, queue_model: QueueModel, vk: VkApi):
+    def __init__(self, queue_controller: QueueController, queue_model: 'QueueModel', vk: 'VkApi'):
         self._queue_controller = queue_controller
         self._queue_model = queue_model
         self._queue = self._queue_model.queue
@@ -159,5 +177,4 @@ class QueueController:
                 print(self.__class__.__name__, inspect.currentframe().f_code.co_name, "Непредвиденная ситуация")
                 return
             message_id = int(message_id)
-            self._user_go_message_id = message_id
-'''
+            self._user_go_message_id = message_id'''

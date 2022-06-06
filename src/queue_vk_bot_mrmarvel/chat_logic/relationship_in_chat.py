@@ -99,15 +99,15 @@ class RelationshipInChat:
                                     self.__send_message(f"Вы встали в очередь {pos_in_queue}ым!")
                             else:
                                 self.__send_message("Невозможно подключится к несуществующей очереди!")
-                        elif sub_cmd == "skip" or sub_cmd == "next":
+                        elif sub_cmd in ("skip", "sk", "skp"):
                             # Следующий по очереди
                             if self._chat.is_queue_running:
                                 user = self._chat.user_wants_to_force_next_queue(user=self.__user)
                                 if user is not None:
-                                    next_user = self._chat.next_on_queue()
+                                    next_user = self._chat.peek_next_on_queue()
                                     if next_user is not None:
                                         msg = f"Твоя очередь, @id{next_user.user_id}!"
-                                        next_user_after_next_user = self._chat.next_on_queue(offset=1)
+                                        next_user_after_next_user = self._chat.peek_next_on_queue(offset=1)
                                         if next_user_after_next_user is not None:
                                             msg += (f"\n@id{next_user_after_next_user.user_id}, ты идёшь "
                                                     f"после него.")
@@ -115,11 +115,21 @@ class RelationshipInChat:
                                     else:
                                         self.__send_message(f"Очередь опустела, чтоб закрыть очередь "
                                                             f"{self.__bot_prefix}q close")
+                                else:
+                                    self.__send_message("Очередь и так пуста!")
                             else:
                                 self.__send_message("Очередь не запущена!")
+                        elif sub_cmd in ("close", "cl"):
+                            self.__send_message("Автор ещё не реализовал эту фичу!")
+                            # TODO
+                            return
+                        elif sub_cmd in ("next", "nxt"):
+                            self.__send_message("Автор ещё не реализовал эту фичу!")
+                            # TODO
+                            return
                         else:
-                            self.__send_message(f"Ожидалось create|new, join|j, skip|next, но получил {sub_cmd}.")
-                    elif self._chat.is_queue_running is not None:
+                            self.__send_message(f"Ожидалось create|new, join|j, skip|sk, next, но получил {sub_cmd}.")
+                    elif self._chat.is_queue_running:
                         self._chat.show_queue()
                     else:
                         self.__send_message(f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")

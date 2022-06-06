@@ -25,7 +25,7 @@ class IChat(Protocol):
     def user_wants_to_force_next_queue(self, user: ChatUser) -> ChatUser | None:
         raise NotImplementedError
 
-    def next_on_queue(self, offset: int = 0) -> ChatUser | None:
+    def peek_next_on_queue(self, offset: int = 0) -> ChatUser | None:
         raise NotImplementedError
 
     def show_queue(self):
