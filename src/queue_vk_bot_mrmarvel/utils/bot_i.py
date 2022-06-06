@@ -5,6 +5,12 @@ from queue_vk_bot_mrmarvel.controllers.queue_controller import QueueController
 
 
 class IBot(Protocol):
+    def remove_messages_from_chat(self, message_ids: list[int], chat_id: int) -> dict | None:
+        raise NotImplementedError
+
+    def remove_message_from_chat(self, message_id: int, chat_id: int) -> dict | None:
+        raise NotImplementedError
+
     def write_msg_to_chat(self, chat_id, message) -> None:
         """
         Send message to VK user
@@ -22,10 +28,10 @@ class IBot(Protocol):
         """
         raise NotImplementedError
 
-    def send_msg_packed_by_json(self, message_json) -> None:
+    def send_msg_packed_by_json(self, message_json) -> dict | None:
         """
         Send message to VK user
-        :param message_json: JSON сообщения
+        :param message_json: JSON сообщения (тело сообщения без random_id)
         """
         raise NotImplementedError
 

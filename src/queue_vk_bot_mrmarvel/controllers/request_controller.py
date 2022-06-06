@@ -13,13 +13,15 @@ from queue_vk_bot_mrmarvel.gl_vars import *
 
 
 class RequestController:
+    _QUEUE_MAX_SIZE: Final = 10
+
     def __init__(self, bot: IBot, vk: VkApi, bot_group_id: int):
         self._bot = bot
         self._vk = vk
         self._bot_group_id = bot_group_id
         self._started = False
         self._requests = queue.Queue[dict]()
-        self._responses = queue.Queue[dict](10)
+        self._responses = queue.Queue[dict](self._QUEUE_MAX_SIZE)
 
     def run_iteration_to_send_requests(self) -> bool:
         """
@@ -37,11 +39,14 @@ class RequestController:
             request['need_response'] = True
             self._requests.put(request)
             tries = 1
-            while request not in self._responses.queue and tries <= 20:
+            uuid = time.time_ns()
+            request['uuid'] = uuid
+            while uuid not in map(lambda x: dict(x).get('uuid', 0), self._responses.queue) and tries <= 20:
                 time.sleep(0.5)
                 tries += 1
             if tries > 10:
                 print(Exception("Превышено кол-во попыток ожидания"))
+                # raise Exception("Превышено кол-во попыток ожидания")
                 return None
             return request
         except Exception as e:
@@ -73,6 +78,8 @@ class RequestController:
                 response = self._vk.method(method, body)
                 if need_response:
                     request['response'] = response
+                    if self._requests.qsize() >= self._QUEUE_MAX_SIZE - 1:
+                        self._requests.get()
                     self._responses.put(request)
             except Exception as e:
                 print(f"ERRORED sending a message\n{request, self._requests}")

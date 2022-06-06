@@ -12,14 +12,6 @@ queue\_vk\_bot\_mrmarvel.chat\_logic.relationship\_in\_chat module
    :undoc-members:
    :show-inheritance:
 
-queue\_vk\_bot\_mrmarvel.chat\_logic.relationship\_in\_chat\_old module
------------------------------------------------------------------------
-
-.. automodule:: queue_vk_bot_mrmarvel.chat_logic.relationship_in_chat_old
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 queue\_vk\_bot\_mrmarvel.chat\_logic.relationship\_in\_ls module
 ----------------------------------------------------------------
 
