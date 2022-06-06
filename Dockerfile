@@ -1,10 +1,15 @@
 FROM python:3
 
-ADD . /app
+ADD src /app/src
+ADD requirements.txt /app/requirements.txt
+ADD setup.py /app/setup.py
+ADD LICENSE.txt /app/LICENSE.txt
+ADD README.md /app/README.md
 
 WORKDIR /app
-RUN pip install -r requirements.txt
+RUN python setup.py install
+RUN rm -rf ./*
 
 VOLUME ["data"]
 
-CMD [ "python", "-m", "src.queue_vk_bot_mrmarvel" ]
+CMD [ "python", "-m", "queue_vk_bot_mrmarvel" ]
