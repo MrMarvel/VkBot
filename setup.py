@@ -25,7 +25,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    install_requires=["vk_api==11.9.8"],
+    install_requires=["vk_api", "Deprecated"],
     packages=setuptools.find_packages(where="src"),
     python_requires=">=3.9"
 )
