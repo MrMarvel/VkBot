@@ -6,7 +6,7 @@ from time import time_ns
 
 from deprecated import deprecated
 
-from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
+from ..utils.chat_user import ChatUser
 
 
 class QueueController:

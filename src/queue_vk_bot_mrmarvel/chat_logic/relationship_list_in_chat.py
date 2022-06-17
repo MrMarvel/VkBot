@@ -7,12 +7,12 @@ from typing import Final
 
 from vk_api import VkApi
 
-from queue_vk_bot_mrmarvel.controllers.queue_controller import QueueController
-from queue_vk_bot_mrmarvel.utils.bot_i import IBot
-from queue_vk_bot_mrmarvel.utils.chat_i import IChat
-from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
-from queue_vk_bot_mrmarvel.chat_logic.relationship_in_chat import RelationshipInChat
-from queue_vk_bot_mrmarvel.gl_vars import pipeline_to_send_msg, DEFAULT_BOT_PREFIX
+from ..controllers.queue_controller import QueueController
+from ..utils.bot_i import IBot
+from ..utils.chat_i import IChat
+from ..utils.chat_user import ChatUser
+from ..chat_logic.relationship_in_chat import RelationshipInChat
+from ..gl_vars import pipeline_to_send_msg, DEFAULT_BOT_PREFIX
 
 
 class ChatLogic(IChat):

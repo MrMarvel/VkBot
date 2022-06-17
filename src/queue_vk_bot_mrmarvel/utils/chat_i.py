@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
+from ..utils.chat_user import ChatUser
 
 
 class IChat(Protocol):
