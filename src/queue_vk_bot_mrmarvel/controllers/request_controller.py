@@ -8,8 +8,8 @@ import copy
 
 from vk_api import VkApi
 
-from queue_vk_bot_mrmarvel.utils.bot_i import IBot
-from queue_vk_bot_mrmarvel.gl_vars import *
+from ..utils.bot_i import IBot
+from ..gl_vars import *
 
 
 class RequestController:

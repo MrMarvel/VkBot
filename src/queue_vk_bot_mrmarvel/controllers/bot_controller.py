@@ -6,12 +6,12 @@ from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
 from vk_api.longpoll import VkLongPoll, VkEventType, Event
 
-from queue_vk_bot_mrmarvel.chat_logic.relationship_list_in_chat import ChatLogic
-from queue_vk_bot_mrmarvel.controllers.queue_controller import QueueController
-from queue_vk_bot_mrmarvel.controllers.request_controller import RequestController
-from queue_vk_bot_mrmarvel.gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
-from queue_vk_bot_mrmarvel.chat_logic.relationship_in_ls import RelationshipInLS
-from queue_vk_bot_mrmarvel.utils.bot_i import IBot
+from ..chat_logic.relationship_list_in_chat import ChatLogic
+from ..controllers.queue_controller import QueueController
+from ..controllers.request_controller import RequestController
+from ..gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
+from ..chat_logic.relationship_in_ls import RelationshipInLS
+from ..utils.bot_i import IBot
 from deprecated import deprecated
 
 

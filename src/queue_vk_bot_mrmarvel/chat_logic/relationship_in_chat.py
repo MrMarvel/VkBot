@@ -2,10 +2,10 @@ import random
 from enum import Enum, auto
 from typing import Final
 
-from queue_vk_bot_mrmarvel.utils.chat_i import IChat
-from queue_vk_bot_mrmarvel.utils.chat_user import ChatUser
-from queue_vk_bot_mrmarvel.gl_vars import DEFAULT_BOT_PREFIX
-from queue_vk_bot_mrmarvel.utils.bot_i import IBot
+from ..utils.chat_i import IChat
+from ..utils.chat_user import ChatUser
+from ..gl_vars import DEFAULT_BOT_PREFIX
+from ..utils.bot_i import IBot
 
 
 class RelationshipInChat:

@@ -1,7 +1,7 @@
 from queue import Queue
 from typing import Protocol
 
-from queue_vk_bot_mrmarvel.controllers.queue_controller import QueueController
+from ..controllers.queue_controller import QueueController
 
 
 class IBot(Protocol):
