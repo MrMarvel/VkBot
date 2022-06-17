@@ -7,11 +7,11 @@ from typing import Final
 
 from vk_api import VkApi
 
-from ..controllers.queue_controller import QueueController
+from ..controllers.all_queues_controller import AllQueueController
 from ..utils.bot_i import IBot
 from ..utils.chat_i import IChat
 from ..utils.chat_user import ChatUser
-from ..chat_logic.relationship_in_chat import RelationshipInChat
+from ..chat_logic.dialog_in_chat import RelationshipInChat
 from ..gl_vars import pipeline_to_send_msg, DEFAULT_BOT_PREFIX
 
 
@@ -29,8 +29,8 @@ class ChatLogic(IChat):
             self._queue_list_message_id = None
         if self._queue_contr is None:
             raise Exception("Нету очереди для вывода")
-        queue = self._queue_contr.queue
-        message = f"В очереди: {len(self._queue_contr.queue)} человек\n"
+        queue = self._queue_contr.get_queue_as_list
+        message = f"В очереди: {len(self._queue_contr.get_queue_as_list)} человек\n"
         for i, user in enumerate(queue):
             message += f"{i+1} — @id{user.user_id}\n"
         message += f'----------------------------\n' \
@@ -62,7 +62,7 @@ class ChatLogic(IChat):
     def user_wants_to_force_next_queue(self, user: ChatUser) -> ChatUser | None:
         if user.is_able_to_create_queue:
             if self.__queue_state == self._QueueState.queue_in_progress:
-                queue = self._queue_contr.queue
+                queue = self._queue_contr.get_queue_as_list
                 if not self._queue_contr.empty:
                     return self._queue_contr.pop()
         return None
@@ -80,7 +80,7 @@ class ChatLogic(IChat):
 
         self.__relations_in_chat: [int, RelationshipInChat] = dict()
 
-        self._queue_contr: QueueController | None = None
+        self._queue_contr: AllQueueController | None = None
         self.__queue_state = self._QueueState.no_queue_running
         self._bot_prefix = DEFAULT_BOT_PREFIX
         # self.__queue: Queue[ChatUser] | None = None
@@ -121,7 +121,7 @@ class ChatLogic(IChat):
 
         if self._queue_contr is None:
             return
-        queue_arr = list(self._queue_contr.queue)
+        queue_arr = list(self._queue_contr.get_queue_as_list)
         if user in queue_arr:
             return None
         pos = self._queue_contr.put(user)
@@ -132,7 +132,7 @@ class ChatLogic(IChat):
 
     def _create_queue(self):
         self.__queue_state = self._QueueState.queue_will_start
-        self._queue_contr = QueueController(self._chat_id)
+        self._queue_contr = AllQueueController(self._chat_id)
         self.__queue_state = self._QueueState.queue_in_progress
 
     def peek_next_on_queue(self, offset: int = 0) -> ChatUser | None:
@@ -140,7 +140,7 @@ class ChatLogic(IChat):
             return None
         if self._queue_contr is None:
             return None
-        queue_arr: list[ChatUser] = self._queue_contr.queue
+        queue_arr: list[ChatUser] = self._queue_contr.get_queue_as_list
         if len(queue_arr) < offset + 1:
             return None
         return queue_arr[offset]
@@ -163,7 +163,7 @@ class ChatLogic(IChat):
         if self._queue_contr is None:
             return
         msg = "Очередь:"
-        arr: list[ChatUser] = list(self._queue_contr.queue)
+        arr: list[ChatUser] = list(self._queue_contr.get_queue_as_list)
         n = len(arr)
         for i in range(10):
             msg += f"\n{i + 1:>2d}" + "    "
@@ -199,7 +199,7 @@ class ChatLogic(IChat):
         pipeline_to_send_msg.put_nowait((self._chat_id, message, False))
         pass
 
-    def get_queue(self) -> QueueController | None:
+    def get_queue(self) -> AllQueueController | None:
         return self._queue_contr
 
     def switch(self, pos1: int, pos2: int) -> bool:
