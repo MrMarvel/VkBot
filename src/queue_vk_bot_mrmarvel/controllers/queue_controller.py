@@ -19,7 +19,8 @@ class QueueController:
     def __init__(self, chat_id):
         super().__init__()
         self._queue_list_message_id = None
-        self._queue = Queue[ChatUser]()
+        self._queue = list[ChatUser]()
+        self.put(ChatUser(10, 1))
         self._chat_id = chat_id
 
     @property
@@ -28,36 +29,50 @@ class QueueController:
         Получение копии очереди пользователей чата.
         :return: Список
         """
-        return copy.deepcopy(self._queue.queue)
+        return copy.deepcopy(self._queue)
 
     @property
     def empty(self) -> bool:
-        return len(self._queue.queue) == 0
+        return len(self._queue) == 0
 
     @property
     def chat_id(self) -> int:
         return self._chat_id
 
+    def get(self, pos: int) -> ChatUser | None:
+        """
+        Получение пользователя по позиции в очереди.
+        :param pos:
+        :return: Пользователь
+        """
+        queue_list = list(self._queue)
+        if pos < len(queue_list):
+            return queue_list[pos]
+        return None
+
     def put(self, elem: ChatUser) -> int | None:
-        if elem in self._queue.queue:
+        if elem in self._queue:
             return None
-        self._queue.put(elem)
-        return len(self._queue.queue)
+        self._queue.insert(len(self), elem)
+        return len(self._queue)
 
     def pop(self) -> ChatUser | None:
         q = self._queue
         try:
-            elem = q.get()
+            elem = q.pop(0)
             return elem
         except Empty:
             pass
         return None
 
+    def __len__(self):
+        return self._queue.__len__()
+
     def skip_force(self) -> ChatUser | None:
         return self.pop()
 
     def get_next_on_queue(self) -> ChatUser | None:
-        queue = list(self._queue.queue)
+        queue = list(self._queue)
         if len(queue) < 2:
             return None
         return queue[1]
@@ -80,6 +95,23 @@ class QueueController:
 
     def notify_chat_next_in_queue(self):
         pass
+
+    def switch(self, pos1: int, pos2: int) -> bool:
+        """
+        Поменять местами двух пользователей по местам в очередях
+        :param pos1:
+        :param pos2:
+        :return: Успешность выполнения
+        """
+        queue_list = self._queue
+        if pos1 >= len(queue_list):
+            return False
+        if pos2 >= len(queue_list):
+            return False
+        t = queue_list[pos1]
+        queue_list[pos1] = queue_list[pos2]
+        queue_list[pos2] = t
+        return True
 
 
 '''
