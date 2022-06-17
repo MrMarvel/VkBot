@@ -1,28 +1,33 @@
 import weakref
 from _weakref import ReferenceType
 from abc import ABCMeta, abstractmethod
+from typing import Protocol, final
 
 
-class ObservationModel(metaclass=ABCMeta):
+class ObservationDelegateModel(metaclass=ABCMeta):
     """
     Абстрактный класс Модель из паттерна MVC.
+    Работает через делегирование обсервера.
     """
 
     def __init__(self):
-        self._observers: list[ReferenceType[Observer]] = list()
+        self._observers: list[ReferenceType[IObserver]] = list()
 
+    @final
     def add_observer(self, obs: 'Observer') -> None:
         self._observers.append(weakref.ref(obs))
 
+    @final
     def remove_observer(self, obs: 'Observer') -> None:
         self._observers.remove(obs)
 
+    @final
     def notify_observers(self) -> None:
         for obs in self._observers:
             obs.model_is_changed()
 
 
-class Observer(metaclass=ABCMeta):
+class IObserver(Protocol):
     """
     Абстрактный класс Наблюдатель из паттерна Наблюдатель для паттерна MVC.
     Наблюдает за параметрами очереди.
@@ -33,4 +38,4 @@ class Observer(metaclass=ABCMeta):
         """
         Метод, который вызывается при измении модели
         """
-        pass
+        raise NotImplementedError
