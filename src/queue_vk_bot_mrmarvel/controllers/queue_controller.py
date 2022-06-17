@@ -20,7 +20,7 @@ class QueueController:
         super().__init__()
         self._queue_list_message_id = None
         self._queue = list[ChatUser]()
-        self.put(ChatUser(10, 1))
+        # self.put(ChatUser(10, 1))
         self._chat_id = chat_id
 
     @property

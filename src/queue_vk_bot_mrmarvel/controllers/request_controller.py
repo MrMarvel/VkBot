@@ -35,13 +35,14 @@ class RequestController:
 
     def got_to_send_request(self, request) -> dict | None:
         try:
-            method, msg = request
+            method = request['method']
+            msg = request['body']
             request['need_response'] = True
             self._requests.put(request)
             tries = 1
             uuid = time.time_ns()
             request['uuid'] = uuid
-            while uuid not in map(lambda x: dict(x).get('uuid', 0), self._responses.queue) and tries <= 20:
+            while uuid not in map(lambda x: dict(x).get('uuid', 0), self._responses.queue) and tries <= 10:
                 time.sleep(0.5)
                 tries += 1
             if tries > 10:
@@ -78,8 +79,8 @@ class RequestController:
                 response = self._vk.method(method, body)
                 if need_response:
                     request['response'] = response
-                    if self._requests.qsize() >= self._QUEUE_MAX_SIZE - 1:
-                        self._requests.get()
+                    if self._responses.qsize() >= self._QUEUE_MAX_SIZE - 1:
+                        self._responses.get()
                     self._responses.put(request)
             except Exception as e:
                 print(f"ERRORED sending a message\n{request, self._requests}")
