@@ -30,3 +30,6 @@ class IChat(Protocol):
 
     def show_queue(self):
         raise NotImplementedError
+
+    def switch(self, pos1: int, pos2: int) -> bool:
+        raise NotImplementedError

@@ -198,3 +198,9 @@ class ChatLogic(IChat):
         # msg = {'chat_id': self.__chat_id, 'keyboard': keyboard}
         pipeline_to_send_msg.put_nowait((self._chat_id, message, False))
         pass
+
+    def get_queue(self) -> QueueController | None:
+        return self._queue_contr
+
+    def switch(self, pos1: int, pos2: int) -> bool:
+        return self._queue_contr.switch(pos1, pos2)

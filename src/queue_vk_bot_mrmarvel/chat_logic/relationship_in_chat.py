@@ -127,6 +127,25 @@ class RelationshipInChat:
                             self.__send_message("Автор ещё не реализовал эту фичу!")
                             # TODO
                             return
+                        elif sub_cmd in ("switch", "sw", "swtch"):
+                            if not self._chat.is_queue_running:
+                                self.__send_message(f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")
+                            if len(cmd_args) > 3:
+                                pos1 = int(cmd_args[2])
+                                pos2 = int(cmd_args[3])
+                                # if type(pos1) is not int:
+                                #     self.__send_message(f"{pos1} не число!")
+                                #     return
+                                # if type(pos2) is not int:
+                                #     self.__send_message(f"{pos2} не число!")
+                                #     return
+                                if not self._chat.switch(pos1-1, pos2-1):
+                                    self.__send_message(f"Нет столько людей в очереди сколько указали вы позиций! "
+                                                        f"{max(pos1,pos2)}")
+                                    return
+                                self.__send_message(f"Были успешно поменяны местами {pos1} и {pos2}!")
+                                self._chat.show_queue()
+                            return
                         else:
                             self.__send_message(f"Ожидалось create|new, join|j, skip|sk, next, но получил {sub_cmd}.")
                     elif self._chat.is_queue_running:
