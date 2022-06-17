@@ -6,11 +6,11 @@ from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
 from vk_api.longpoll import VkLongPoll, VkEventType, Event
 
-from ..chat_logic.relationship_list_in_chat import ChatLogic
-from ..controllers.queue_controller import QueueController
+from ..chat_logic.all_dialogs_in_chat import ChatLogic
+from ..controllers.all_queues_controller import AllQueueController
 from ..controllers.request_controller import RequestController
 from ..gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
-from ..chat_logic.relationship_in_ls import RelationshipInLS
+from ..chat_logic.dialog_in_ls import RelationshipInLS
 from ..utils.bot_i import IBot
 from deprecated import deprecated
 
@@ -107,7 +107,7 @@ class BotController(IBot):
     def show_next_in_queue_in_chat(self):
         pass
 
-    def get_queue_from_chat(self, chat_id) -> QueueController | None:
+    def get_queue_from_chat(self, chat_id) -> AllQueueController | None:
         """
         TODO
         :param chat_id:

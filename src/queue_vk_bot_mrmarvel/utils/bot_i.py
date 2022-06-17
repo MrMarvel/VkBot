@@ -1,7 +1,7 @@
 from queue import Queue
 from typing import Protocol
 
-from ..controllers.queue_controller import QueueController
+from ..models.queue_model import QueueInChat
 
 
 class IBot(Protocol):
@@ -43,5 +43,5 @@ class IBot(Protocol):
         """
         raise NotImplementedError
 
-    def get_queue_from_chat(self, chat_id) -> QueueController | None:
+    def get_queue_from_chat(self, chat_id) -> QueueInChat | None:
         raise NotImplementedError

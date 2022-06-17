@@ -44,7 +44,7 @@ def run():
     print_hi('PyCharm')
     try:
         pass
-        load_config()  # DEPRECATION because of Heroku env input
+        # load_config()  # DEPRECATION because of Heroku env input
     except FileNotFoundError:
         pass
     if gl_vars.token is None:
@@ -59,7 +59,7 @@ def run():
     vk = VkApi(token=gl_vars.token)
     # Основной цикл
     # threading.Thread(target=run_cycle_to_send_msg, daemon=True).start()
-    global thread_chats
+
     bot = BotController(vk, int(gl_vars.bot_group_id))
     bot.start()
     # thread_chats = threading.Thread(target=run_cycle_on_chats, args=(vk,), daemon=True)
@@ -68,5 +68,3 @@ def run():
     # thread_ls.start()
     # thread_ls.join()
     print("Main program is finished!")
-
-

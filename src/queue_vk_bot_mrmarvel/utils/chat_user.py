@@ -14,7 +14,7 @@ class User:
 class ChatUser(User):
     def __init__(self, user_id: int, chat_id: int):
         super().__init__(user_id)
-        admin_list_vk_id=os.environ.get("ADMIN_LIST").split(',')
+        admin_list_vk_id = os.environ.get("ADMIN_LIST").split(',')
         self._chat_id: Final = chat_id
         self._is_able_to_create_queue: Final = str(user_id) in admin_list_vk_id
         self._is_able_to_force_skip: Final = str(user_id) in admin_list_vk_id
