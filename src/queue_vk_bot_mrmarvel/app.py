@@ -10,8 +10,7 @@ from vk_api import VkApi
 # Shift to search everywhere for classes, files, tool windows, actions,
 # and settings.
 from . import gl_vars
-from .config_operations import load_config
-from .controllers.bot_controller import BotController
+from .bot.bot_controller import BotController
 
 
 def print_hi(name: str) -> None:

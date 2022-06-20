@@ -1,14 +1,13 @@
-import queue
 import random
-import threading
 import time
 from threading import Thread
-from typing import Final
 import copy
 
+import schedule
+import vk_api.exceptions
 from vk_api import VkApi
 
-from ..utils.bot_i import IBot
+from ..bot.bot_i import IBot
 from ..gl_vars import *
 
 
@@ -82,6 +81,9 @@ class RequestController:
                     if self._responses.qsize() >= self._QUEUE_MAX_SIZE - 1:
                         self._responses.get()
                     self._responses.put(request)
+            except vk_api.exceptions.ApiError as e:
+                print(f"ERRORED sending a message\n{request, self._requests}")
+                print(e)
             except Exception as e:
                 print(f"ERRORED sending a message\n{request, self._requests}")
                 raise e

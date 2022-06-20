@@ -7,7 +7,7 @@ from ..utils.chat_user import ChatUser
 
 class QueueInChat:
     """
-    Очередь, которая отображается в чате
+    Очередь, которая отображается в чате.
     Сущность
     """
 
@@ -42,7 +42,6 @@ class QueueInChat:
     def __len__(self):
         return self._queue.__len__()
 
-    @property
     def as_list(self) -> list[ChatUser]:
         """
         Получение очереди как списка.
@@ -50,22 +49,25 @@ class QueueInChat:
         """
         return deepcopy(self._queue)
 
-    def get_last(self) -> ChatUser | None:
+    def get_last(self, offset: int = 0) -> ChatUser | None:
         """
         Получение последнего места.
         :return:
         """
         if len(self._queue) > 0:
-            return self._queue[-1]
+            return self._queue[-1 - offset]
         return None
 
-    def get_first(self) -> ChatUser | None:
+    def __getitem__(self, i: int | slice):
+        return self._queue[i]
+
+    def get_first(self, offset: int = 0) -> ChatUser | None:
         """
         Получение первого места.
         :return:
         """
         if len(self._queue) > 0:
-            return self._queue[0]
+            return self._queue[0 + offset]
         return None
 
     def pop(self) -> ChatUser | None:
@@ -80,16 +82,46 @@ class QueueInChat:
             return deleted_chat_user
         return None
 
-    def push(self, chat_user: ChatUser) -> None:
+    def push(self, chat_user: ChatUser) -> int | None:
         """
         Вставка пользователя, который есть в чате, в последнее место.
         :param chat_user:
         :return:
         """
-        if len(self._queue) > 0:
-            if chat_user.chat_id == self._chat_id:
-                self._queue.append(chat_user)
-                if self.did_push is not None:
-                    self.did_push()
+        if chat_user.chat_id != self._chat_id:
+            return None
 
+        def get_id_from_chat_user(x: ChatUser):
+            return x.user_id
 
+        if chat_user.user_id in map(lambda x: get_id_from_chat_user(x), self._queue):
+            return None
+
+        self._queue.append(chat_user)
+        if self.did_push is not None:
+            self.did_push()
+        return len(self._queue)
+
+    def skip(self, count: int = 1) -> None:
+        """
+        Пропуск N количества мест.
+        :param count:
+        :return:
+        """
+        for _ in range(count):
+            self.pop()
+
+    def switch(self, pos1: int, pos2: int) -> None:
+        """
+        Смена позиций. отсчёт от 0.
+        :param pos1:
+        :param pos2:
+        :return:
+        """
+        if pos1 >= len(self._queue):
+            return
+        if pos2 >= len(self._queue):
+            return
+        t = self._queue[pos1]
+        self._queue[pos1] = self._queue[pos2]
+        self._queue[pos2] = t

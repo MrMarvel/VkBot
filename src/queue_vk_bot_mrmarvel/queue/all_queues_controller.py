@@ -1,28 +1,21 @@
-import inspect
-from copy import deepcopy
-from queue import Empty
-from time import time_ns
-
-from deprecated import deprecated
-from overloading import overload
-
-from ..models.queue_model import QueueInChat
-from .queue_controller import QueueControllerInChat
-from ..utils.bot_i import IBot
-from ..utils.chat_user import ChatUser, User
-from ..views.queue_view import QueueViewInChat
+from multipledispatch import dispatch
+from ..queue.queue_model import QueueInChat
+from ..queue.queue_controller import QueueControllerInChat
+from ..bot.bot_i import IBot
+from ..utils.chat_user import User
+from ..queue.queue_view import QueueViewInChat
 
 
 class AllQueueController:
     """
     Управляющий класс.
-    Управляет очередями в чате.
+    Управляет очередями в чатах.
     НЕ СУЩНОСТЬ
     """
 
-    def __init__(self, chat_id, bot: IBot):
+    def __init__(self, bot: IBot):
         self._bot = bot
-        self._queues_in_chats = dict[int, QueueInChat]()
+        self._queues_in_chats = dict[int, QueueControllerInChat]()
         # self.put(ChatUser(10, 1))
 
     def __queue_did_push(self, added_user: User):
@@ -38,20 +31,25 @@ class AllQueueController:
             queue_in_chat.did_push = self.__queue_did_push
             queue_in_chat.did_pop = self.__queue_did_pop
 
-            queue_view_in_chat = QueueViewInChat(model=queue_in_chat, bot=self._bot)
+            queue_view_in_chat = QueueViewInChat(model=queue_in_chat, sender=self._bot)
 
             queue_controller_in_chat = QueueControllerInChat(model=queue_in_chat, view=queue_view_in_chat)
 
-            self._queues_in_chats[chat_id] = queue_in_chat
+            self._queues_in_chats[chat_id] = queue_controller_in_chat
         return queue_controller_in_chat
 
-    def destroy_queue(self, chat_id: int) -> QueueInChat | None:
-        return self._queues_in_chats.pop(chat_id, None)
+    def get_queue(self, in_chat_id: int) -> QueueControllerInChat | None:
+        contr = self._queues_in_chats.get(in_chat_id, None)
+        if contr is None:
+            return None
+        return contr
 
-    @overload
-    def destroy_queue(self, queue_in_chat: QueueInChat) -> QueueInChat | None:
+    def destroy_queue_in_chat(self, in_chat_id: int) -> QueueControllerInChat | None:
+        return self._queues_in_chats.pop(in_chat_id, None)
+
+    def destroy_queue(self, queue_in_chat: QueueControllerInChat) -> QueueControllerInChat | None:
         values = list(self._queues_in_chats.values())
-        return self.destroy_queue(chat_id=list(self._queues_in_chats.values()).index(queue_in_chat))
+        return self.destroy_queue_in_chat(in_chat_id=values.index(queue_in_chat))
 
     # @deprecated("МЕТОДЫ СУЩНОСТИ БУДУТ УДАЛЕНЫ")
     # def get_queue_as_list(self) -> list:

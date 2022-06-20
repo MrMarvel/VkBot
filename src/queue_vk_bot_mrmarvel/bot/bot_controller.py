@@ -1,73 +1,78 @@
 import time
+from _weakref import ref
+from collections import deque
 from threading import Thread
 from typing import Final
 
+import schedule as schedule
 from vk_api import VkApi
 from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType, VkBotMessageEvent
 from vk_api.longpoll import VkLongPoll, VkEventType, Event
 
-from ..chat_logic.all_dialogs_in_chat import ChatLogic
-from ..controllers.all_queues_controller import AllQueueController
-from ..controllers.request_controller import RequestController
-from ..gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
+from ..queue.queue_controller import QueueControllerInChat
+from ..chat_logic.all_dialogs_in_chat import AllDialogsInChatsLogic
 from ..chat_logic.dialog_in_ls import RelationshipInLS
-from ..utils.bot_i import IBot
-from deprecated import deprecated
+from ..queue.all_queues_controller import AllQueueController
+from ..requests.request_controller import RequestController
+from ..gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
+from ..queue.queue_model import QueueInChat
+from ..bot.bot_i import IBot, permission, has_permission, has_permission_in_chat
+
+# @deprecated
+# def write_msg_to_user(vk, user_id, message):
+#     """
+#     Send message to VK user
+#     :param vk: API session
+#     :param user_id: ID ВК пользователя
+#     :param message: String of message to send
+#     :return:
+#     """
+#     msg = {'user_id': user_id, 'message': message, 'random_id': time.time_ns()}
+#     send_msg_packed_by_json(vk, msg)
 
 
-@deprecated
-def write_msg_to_user(vk, user_id, message):
-    """
-    Send message to VK user
-    :param vk: API session
-    :param user_id: ID ВК пользователя
-    :param message: String of message to send
-    :return:
-    """
-    msg = {'user_id': user_id, 'message': message, 'random_id': time.time_ns()}
-    send_msg_packed_by_json(vk, msg)
-
-
-@deprecated
-def write_msg_to_chat(vk, chat_id, message) -> None:
-    """
-    DEPRECATED
-    Send message to VK user
-    :param vk: API session
-    :param chat_id: ID ВК чата
-    :param message: String of message to send
-    """
-    msg = {'chat_id': chat_id, 'message': message, 'random_id': time.time_ns()}
-    send_msg_packed_by_json(vk, msg)
-
-
-@deprecated
-def send_msg_packed_by_json(vk, message_json) -> None:
-    """
-    DEPRECATED
-    Send message to VK user
-    :param vk: API session
-    :param message_json: JSON сообщения
-    """
-    message_json['random_id'] = time.time_ns()
-
-    # vk.method('messages.send', message_json)
-
-
-def write_msg(vk, deliver_id, message, is_private: bool = True):
-    """
-    DEPRECATED
-    Send message to VK user
-    :param vk: API session
-    :param deliver_id: ID ВК чата или пользователя
-    :param message: String of message to send
-    :param is_private: 1 - личный чат 0 - беседа
-    :return:
-    """
-    if is_private:
-        write_msg_to_user(vk=vk, user_id=deliver_id, message=message)
-    else:
-        write_msg_to_chat(vk=vk, chat_id=deliver_id, message=message)
+# @deprecated
+# def write_msg_to_chat(vk, chat_id, message) -> None:
+#     """
+#     DEPRECATED
+#     Send message to VK user
+#     :param vk: API session
+#     :param chat_id: ID ВК чата
+#     :param message: String of message to send
+#     """
+#     msg = {'chat_id': chat_id, 'message': message, 'random_id': time.time_ns()}
+#     send_msg_packed_by_json(vk, msg)
+#
+#
+# @deprecated
+# def send_msg_packed_by_json(vk, message_json) -> None:
+#     """
+#     DEPRECATED
+#     Send message to VK user
+#     :param vk: API session
+#     :param message_json: JSON сообщения
+#     """
+#     message_json['random_id'] = time.time_ns()
+#
+#     # vk.method('messages.send', message_json)
+#
+# @deprecated
+# def write_msg(vk, deliver_id, message, is_private: bool = True):
+#     """
+#     DEPRECATED
+#     Send message to VK user
+#     :param vk: API session
+#     :param deliver_id: ID ВК чата или пользователя
+#     :param message: String of message to send
+#     :param is_private: 1 - личный чат 0 - беседа
+#     :return:
+#     """
+#
+#     if is_private:
+#         write_msg_to_user(vk=vk, user_id=deliver_id, message=message)
+#     else:
+#         write_msg_to_chat(vk=vk, chat_id=deliver_id, message=message)
+from ..utils.chat_user import Permission, User
 
 
 def init_connection(token) -> VkApi | None:
@@ -79,6 +84,14 @@ def init_connection(token) -> VkApi | None:
     return None
 
 
+def update_schedule(bot):
+    print("Schedule cycle is running!")
+    while bot is not None:
+        schedule.run_pending()
+        time.sleep(1)
+    print("Schedule cycle is stopped!")
+
+
 class BotController(IBot):
     CHAT_ID_PREFIX: Final = 2000000000
 
@@ -87,34 +100,28 @@ class BotController(IBot):
         self._bot_group_id = bot_group_id
         self._request_contr = RequestController(self, vk, bot_group_id)
         self._request_contr.start()
+        self._all_queues_contr = AllQueueController(bot=self)
+        self._sended_messages_to_chat_not_removed = deque[dict]()
 
     def start(self):
         thread_chats = Thread(target=self.run_cycle_on_chats, args=(), daemon=True)
         thread_chats.start()
+        thread_schedule = Thread(target=update_schedule, args=(ref(self),), daemon=True)
+        thread_schedule.start()
         thread_ls = Thread(target=self.run_cycle_on_ls, args=(), daemon=True)
         thread_ls.start()
         thread_ls.join()
 
-    def create_queue_in_chat(self, chat_id) -> None:
-        """
-        TODO
-        :param chat_id:
-        :return:
-        """
-        raise NotImplementedError
-        pass
+    def create_queue_in_chat(self, chat_id: int, by_user: User) -> QueueControllerInChat:
+        if has_permission_in_chat(user=by_user, in_chat_id=chat_id):
+            return self._all_queues_contr.create_queue(chat_id=chat_id)
 
-    def show_next_in_queue_in_chat(self):
-        pass
+    def get_queue_from_chat(self, chat_id) -> QueueControllerInChat | None:
+        return self._all_queues_contr.get_queue(in_chat_id=chat_id)
 
-    def get_queue_from_chat(self, chat_id) -> AllQueueController | None:
-        """
-        TODO
-        :param chat_id:
-        :return:
-        """
-        raise NotImplementedError
-        pass
+    def destroy_queue_in_chat(self, in_chat_id: int, by_user: User):
+        if has_permission_in_chat(user=by_user, in_chat_id=in_chat_id):
+            return self._all_queues_contr.destroy_queue_in_chat(in_chat_id=in_chat_id)
 
     def write_msg_to_user(self, user_id, message) -> None:
         """
@@ -124,7 +131,7 @@ class BotController(IBot):
         :return:
         """
         msg = {'user_id': user_id, 'message': message, 'random_id': time.time_ns()}
-        send_msg_packed_by_json(self._vk, msg)
+        self.send_msg_packed_by_json(self._vk, msg)
 
     def write_msg_to_chat(self, chat_id, message) -> None:
         """
@@ -132,18 +139,26 @@ class BotController(IBot):
         :param chat_id: ID ВК чата
         :param message: String of message to send
         """
-        msg = {'chat_id': chat_id, 'message': message, 'random_id': time.time_ns()}
+        msg = {'peer_ids': [self.CHAT_ID_PREFIX + chat_id], 'message': message, 'random_id': time.time_ns()}
         self.send_msg_packed_by_json(msg)
 
-    def send_msg_packed_by_json(self, message_json) -> dict | None:
-        """
-        Send message to VK user
-        :param message_json: JSON сообщения
-        """
+    def send_msg_packed_by_json(self, message_json, do_not_remove_message: bool = False) -> dict | None:
         message_json['random_id'] = time.time_ns()
         message_json['v'] = '5.131'
         request_method = 'messages.send'
-        return self._send_request({'method': request_method, 'body': message_json})
+        response_all = self._send_request({'method': request_method, 'body': message_json})
+        WAIT_SECONDS_TO_REMOVE_BOT_MESSAGES = 30
+        if not do_not_remove_message:
+            response = response_all.get('response', list[dict]())
+            for sended_message in response:
+                # self._sended_messages_to_chat_not_removed.append(sended_message)
+                if sended_message.get('message_id', None) == 0:
+                    schedule.every(WAIT_SECONDS_TO_REMOVE_BOT_MESSAGES).seconds.do(
+                        self.delayed_remove_message_from_chat,
+                        sended_message.get('conversation_message_id'), sended_message.get('peer_id', 0)
+                    )
+
+        return response_all
         # return self._request_contr.got_to_send_request({'method': request_method, 'body': message_json})
         # self._vk.method('messages.send', message_json)
 
@@ -165,6 +180,10 @@ class BotController(IBot):
     def remove_message_from_chat(self, message_id: int, chat_id: int) -> dict | None:
         return self.remove_messages_from_chat([message_id], chat_id)
 
+    def delayed_remove_message_from_chat(self, message_id: int, chat_id: int):
+        self.remove_message_from_chat(message_id, chat_id)
+        return schedule.CancelJob
+
     def write_msg(self, deliver_id, message, is_private: bool = True):
         """
         Send message to VK user
@@ -174,9 +193,9 @@ class BotController(IBot):
         :return:
         """
         if is_private:
-            write_msg_to_user(vk=self._vk, user_id=deliver_id, message=message)
+            self.write_msg_to_user(vk=self._vk, user_id=deliver_id, message=message)
         else:
-            write_msg_to_chat(vk=self._vk, chat_id=deliver_id, message=message)
+            self.write_msg_to_chat(vk=self._vk, chat_id=deliver_id, message=message)
 
     def run_cycle_on_chats(self) -> None:
         """
@@ -241,7 +260,7 @@ class BotController(IBot):
 
         chat_logic = relationships_in_chats.get(chat_id, None)
         if chat_logic is None:
-            chat_logic = ChatLogic(self, chat_id=chat_id)
+            chat_logic = AllDialogsInChatsLogic(self, chat_id=chat_id)
             relationships_in_chats[chat_id] = chat_logic
 
         relation = chat_logic.get_relationship_with_user(user_id)
