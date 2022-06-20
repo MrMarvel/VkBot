@@ -24,3 +24,4 @@ __# VkBot
 | decohints  | ==1.0.7  |
 | requests   | ==2.28.0 |
 | SQLAlchemy | ==1.4.37 |
+| schedule   | ==1.1.0  |
