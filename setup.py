@@ -8,16 +8,16 @@ with open("LICENSE.txt", "r", encoding='utf-8') as fh:
 
 setup(
     name="queue-vk-bot-mrmarvel",
-    version="0.0.1",
+    version="0.0.2",
     author="Sergey",
     author_email="seregakkk999@yandex.ru",
     license=license_from_file,
     description="VK Bot for organising queues and other interesting things",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/SADT-Boting/VkBot",
+    url="https://github.com/MrMarvel/VkBot",
     project_urls={
-        "Bug Tracker": "https://github.com/SADT-Boting/VkBot/issues",
+        "Bug Tracker": "https://github.com/MrMarvel/VkBot/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3.10",
@@ -25,7 +25,7 @@ setup(
         "Operating System :: OS Independent",
     ],
     package_dir={"": "src"},
-    install_requires=["vk_api", "Deprecated"],
+    install_requires=["vk_api", "Deprecated", "decohints", "requests", "SQLAlchemy", "schedule"],
     packages=setuptools.find_packages(where="src"),
-    python_requires=">=3.9"
+    python_requires=">=3.10"
 )

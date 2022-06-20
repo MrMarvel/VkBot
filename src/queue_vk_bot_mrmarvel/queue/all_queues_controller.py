@@ -1,4 +1,3 @@
-from multipledispatch import dispatch
 from ..queue.queue_model import QueueInChat
 from ..queue.queue_controller import QueueControllerInChat
 from ..bot.bot_i import IBot
