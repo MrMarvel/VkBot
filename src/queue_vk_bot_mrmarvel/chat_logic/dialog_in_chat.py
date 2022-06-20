@@ -2,13 +2,14 @@ import random
 from enum import Enum, auto
 from typing import Final
 
-from ..utils.chat_i import IChat
-from ..utils.chat_user import ChatUser
+from ..queue.queue_controller import QueueControllerInChat
+from ..chat_logic.all_dialogs_in_chats_i import IAllDialogInChatsController
+from ..utils.chat_user import ChatUser, Permission
 from ..gl_vars import DEFAULT_BOT_PREFIX
-from ..utils.bot_i import IBot
+from ..bot.bot_i import IBot, permission
 
 
-class RelationshipInChat:
+class DialogInChat:
     """
     Подконтроллер Контроллера бота. 1 отношение на 1 команду пользователя
     Отношение пользователя с ботом, описывает состояния поведения в чатах.
@@ -21,15 +22,22 @@ class RelationshipInChat:
         queue_in_chat_and_will_start_communicate = auto(),
         communication_will_end = auto(),
 
-    def __init__(self, bot: IBot, user: ChatUser, chat: IChat):
+    def __init__(self, bot: IBot, all_dialogs_in_chats_controller: IAllDialogInChatsController,
+                 chating_with_user: ChatUser, in_chat_id: int):
         self._bot = bot
-        self.__user_id: Final = user.user_id
+        self._all_dialogs_in_chats_controller: IAllDialogInChatsController = all_dialogs_in_chats_controller
+        self._user: ChatUser = chating_with_user
+        self._chat_id: int = in_chat_id
+
+        self._queue_contr = self._bot.get_queue_from_chat(chat_id=self._chat_id)
+        self.__user_id: Final = chating_with_user.user_id
         self.__state = self._CommunicationState.will_start_communicate
-        self._chat: IChat = chat
-        self.__chat_id: int = chat.chat_id
-        self.__user: ChatUser = user
         self.__bot_prefix = DEFAULT_BOT_PREFIX
         self.__user_cmds: list[int] = list()
+
+    @property
+    def is_queue_running(self):
+        return self._queue_contr is not None
 
     @property
     def bot_prefix(self):
@@ -51,6 +59,22 @@ class RelationshipInChat:
         :return:
         """
         state = self.__state
+        create_alias = ['создать очередь', 'создание очереди', 'create queue', 'qc', 'cq',
+                        'очередь появись', 'queue init', 'queue initialization']
+        show_queue_alias = ['вывод очереди', 'очередь', 'текущая очередь']
+        delete_queue_alias = ['удаление очереди', 'delete queue', 'remove queue', 'clear queue', 'очистить очередь',
+                              'очистка очереди']
+        join_queue_alias = ['Встать в очередь', 'join/j', 'занять очередь']
+        if msg in create_alias:
+            self.user_wants_to_create_queue()
+            return
+        if msg in show_queue_alias:
+            self.user_wants_to_show_queue()
+            return
+        if msg in delete_queue_alias:
+            self.user_wants_to_close_queue()
+        if msg in join_queue_alias:
+            self.user_wants_to_join_queue()
         if msg.startswith(self.__bot_prefix):
             # Это команда
             clear_msg = msg.removeprefix(self.__bot_prefix)  # Сообщение без префикса
@@ -86,49 +110,23 @@ class RelationshipInChat:
                     if len(cmd_args) > 1:
                         sub_cmd = cmd_args[1]
                         if sub_cmd == "create" or sub_cmd == "new":
-                            # q_args = cmd_args[2:]
-                            self._chat.user_wants_to_create_queue(self.__user_id)
-                            # self.__chat.user_wants_to_create_queue(user_id=self.__user_id)
+                            self.user_wants_to_create_queue()
+
                         elif sub_cmd == "join" or sub_cmd == "j":
-                            if self._chat.is_queue_running:
-                                # q_args = cmd_args[2:]
-                                pos_in_queue = self._chat.user_wants_to_join_to_queue(user=self.__user)
-                                if pos_in_queue is None:
-                                    self.__send_message("Вы уже в очереди!")
-                                else:
-                                    self.__send_message(f"Вы встали в очередь {pos_in_queue}ым!")
-                            else:
-                                self.__send_message("Невозможно подключится к несуществующей очереди!")
+                            self.user_wants_to_join_queue()
+
                         elif sub_cmd in ("skip", "sk", "skp"):
                             # Следующий по очереди
-                            if self._chat.is_queue_running:
-                                user = self._chat.user_wants_to_force_next_queue(user=self.__user)
-                                if user is not None:
-                                    next_user = self._chat.peek_next_on_queue()
-                                    if next_user is not None:
-                                        msg = f"Твоя очередь, @id{next_user.user_id}!"
-                                        next_user_after_next_user = self._chat.peek_next_on_queue(offset=1)
-                                        if next_user_after_next_user is not None:
-                                            msg += (f"\n@id{next_user_after_next_user.user_id}, ты идёшь "
-                                                    f"после него.")
-                                        self.__send_message(msg)
-                                    else:
-                                        self.__send_message(f"Очередь опустела, чтоб закрыть очередь "
-                                                            f"{self.__bot_prefix}q close")
-                                else:
-                                    self.__send_message("Очередь и так пуста!")
-                            else:
-                                self.__send_message("Очередь не запущена!")
+                            self.user_wants_to_force_skip()
                         elif sub_cmd in ("close", "cl"):
-                            self.__send_message("Автор ещё не реализовал эту фичу!")
-                            # TODO
+                            self.user_wants_to_close_queue()
                             return
                         elif sub_cmd in ("next", "nxt"):
                             self.__send_message("Автор ещё не реализовал эту фичу!")
                             # TODO
                             return
                         elif sub_cmd in ("switch", "sw", "swtch"):
-                            if not self._chat.is_queue_running:
+                            if not self.is_queue_running:
                                 self.__send_message(f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")
                             if len(cmd_args) > 3:
                                 pos1 = int(cmd_args[2])
@@ -139,17 +137,17 @@ class RelationshipInChat:
                                 # if type(pos2) is not int:
                                 #     self.__send_message(f"{pos2} не число!")
                                 #     return
-                                if not self._chat.switch(pos1-1, pos2-1):
+                                if not self._all_dialogs_in_chats_controller.switch(pos1 - 1, pos2 - 1):
                                     self.__send_message(f"Нет столько людей в очереди сколько указали вы позиций! "
-                                                        f"{max(pos1,pos2)}")
+                                                        f"{max(pos1, pos2)}")
                                     return
                                 self.__send_message(f"Были успешно поменяны местами {pos1} и {pos2}!")
-                                self._chat.show_queue()
+                                self.user_wants_to_show_queue()
                             return
                         else:
                             self.__send_message(f"Ожидалось create|new, join|j, skip|sk, next, но получил {sub_cmd}.")
-                    elif self._chat.is_queue_running:
-                        self._chat.show_queue()
+                    elif self.is_queue_running:
+                        self.user_wants_to_show_queue()
                     else:
                         self.__send_message(f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")
                         # self.__chat.send_queue_list()
@@ -165,8 +163,66 @@ class RelationshipInChat:
             case _:
                 pass
 
-    def __end_conversation(self):
-        self.__state = self.__state.communication_will_end
+    def user_wants_to_force_skip(self):
+        if not self._queue_contr:
+            return None
+
+        if self._queue_contr is not None:
+            user = self._queue_contr.model.pop()
+            if user is not None:
+                next_user = self._queue_contr.model.get_last()
+                if next_user is not None:
+                    msg = f"Твоя очередь, @id{next_user.user_id}!"
+                    next_user_after_next_user = self._queue_contr.model.get_last(offset=1)
+                    if next_user_after_next_user is not None:
+                        msg += (f"\n@id{next_user_after_next_user.user_id}, ты идёшь "
+                                f"после него.")
+                    self.__send_message(msg)
+                else:
+                    self.__send_message(f"Очередь опустела, чтоб закрыть очередь "
+                                        f"{self.__bot_prefix}q close")
+            else:
+                self.__send_message("Очередь и так пуста!")
+        else:
+            self.__send_message("Очередь не запущена!")
+
+    def user_wants_to_create_queue(self):
+        # user = ChatUser.load_user(chat_id=self._chat_id, user_id=self._user.user_id)
+        if self._user.is_able_to_create_queue:
+            if self._queue_contr is None:
+                self.__send_message("Создаём очередь.")
+                self._queue_contr = self._bot.create_queue_in_chat(chat_id=self._chat_id, by_user=self._user)
+                self._queue_contr.view.reset_queue_list()
+            else:
+                self.__send_message("Очередь уже создана!")
+        else:
+            self.__send_message("Ты не можешь создавать очереди. Попроси того, кто может ;)")
+
+    def user_wants_to_show_queue(self):
+        if not self._queue_contr:
+            return None
+        self._queue_contr.view.reset_queue_list()
+
+    def user_wants_to_join_queue(self):
+        if self._queue_contr is not None:
+            pos_in_queue = self._queue_contr.model.push(self._user)
+            if pos_in_queue is None:
+                self.__send_message("Вы уже в очереди!")
+            else:
+                self.__send_message(f"Вы встали в очередь {pos_in_queue}ым!")
+        else:
+            self.__send_message("Невозможно подключится к несуществующей очереди!")
+
+    def user_wants_to_close_queue(self):
+        if self._user.has_permission(Permission.DESTROY_QUEUE):
+            if self._queue_contr is not None:
+                self._bot.destroy_queue_in_chat(in_chat_id=self._chat_id, by_user=self._user)
+                self._queue_contr = None
+                self.__send_message("Прощай очередь!")
+            else:
+                self.__send_message("Очередь и так нету!")
+        else:
+            self.__send_message("")
 
     def __send_cap_msg(self) -> None:
         """
@@ -198,7 +254,7 @@ class RelationshipInChat:
         rand_msgs = "К сожелению я не понял, что вы имели ввиду.", \
                     "Мяу?\nА вы поняли, что я имел в виду? Вот и я также вас.", \
                     "Хммм.. даже не знаю что сказать."
-        self._bot.write_msg_to_chat(self.__chat_id, random.choice(rand_msgs))
+        self._bot.write_msg_to_chat(self._chat_id, random.choice(rand_msgs))
         # pipeline_to_send_msg.put_nowait((self.__chat_id, random.choice(rand_msgs), False))
 
     # def __send_message_to_user(self, msg: str):
@@ -208,5 +264,6 @@ class RelationshipInChat:
         self.__send_message_to_chat(msg)
 
     def __send_message_to_chat(self, msg: str):
-        self._bot.write_msg_to_chat(self.__chat_id, msg)
+        self._bot.write_msg_to_chat(self._chat_id, msg)
         # pipeline_to_send_msg.put_nowait((self.__chat_id, msg, False))
+

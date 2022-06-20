@@ -1,10 +1,8 @@
-from queue import Queue
 from typing import Protocol
 
-from ..models.queue_model import QueueInChat
 
+class ISender(Protocol):
 
-class IBot(Protocol):
     def remove_messages_from_chat(self, message_ids: list[int], chat_id: int) -> dict | None:
         raise NotImplementedError
 
@@ -28,20 +26,10 @@ class IBot(Protocol):
         """
         raise NotImplementedError
 
-    def send_msg_packed_by_json(self, message_json) -> dict | None:
+    def send_msg_packed_by_json(self, message_json, do_not_remove_message: bool = False) -> dict | None:
         """
         Send message to VK user
+        :param do_not_remove_message:
         :param message_json: JSON сообщения (тело сообщения без random_id)
         """
-        raise NotImplementedError
-
-    def create_queue_in_chat(self, chat_id) -> None:
-        """
-        Создаёт очередь в чате
-        :param chat_id:
-        :return:
-        """
-        raise NotImplementedError
-
-    def get_queue_from_chat(self, chat_id) -> QueueInChat | None:
         raise NotImplementedError
