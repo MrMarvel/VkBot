@@ -24,14 +24,12 @@ def print_hi(name: str) -> None:
     print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
 
 
-
 # Press the green button in the gutter to run the script.
 
 
 vk: VkApi | None = None
 
-
-thread_chats: threading.Thread | None = None # DEPRECATED
+thread_chats: threading.Thread | None = None  # DEPRECATED
 
 
 def run():
