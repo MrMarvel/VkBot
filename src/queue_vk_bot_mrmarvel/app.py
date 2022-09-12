@@ -9,8 +9,24 @@ from vk_api import VkApi
 # Press Shift+F10 to execute it or replace it with your code. Press Double
 # Shift to search everywhere for classes, files, tool windows, actions,
 # and settings.
+from src.utils.module import Module
 from . import gl_vars
 from .bot.bot_controller import BotController
+
+
+class QueueModule(Module):
+    @property
+    def name(self) -> str:
+        return "Queue VK Module"
+
+    def module_will_load(self):
+        pass
+
+    def module_will_unload(self):
+        pass
+
+    def module_infinite_run(self):
+        run()
 
 
 def print_hi(name: str) -> None:
