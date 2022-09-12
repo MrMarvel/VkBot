@@ -20,7 +20,7 @@ class Permission(enum.Enum):
     DESTROY_QUEUE = enum.auto
 
 
-class User(Base):
+class User:
     admin_list_vk_id = str(os.environ.get("ADMIN_LIST")).split(',')
 
     def __init__(self, user_id: int):
