@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.abspath('../../src'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'VkQueueBot'
+project = 'QueueModule'
 copyright = '2022, Sergey'
 author = 'Sergey'
 
@@ -46,7 +46,7 @@ language = 'ru'
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ["**/modules"]
 
 # -- Options for HTML output -------------------------------------------------
 

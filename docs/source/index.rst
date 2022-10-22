@@ -7,11 +7,11 @@ Welcome to VkQueueBot's documentation!
 ======================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
 
-   queue_vk_bot_mrmarvel
+   modules
 
 Indices and tables
 ==================

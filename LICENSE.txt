@@ -1,5 +1,0 @@
-MY License
-
-Copyright (c) 2022 Kulikov Sergey Sergeyevich
-
-Free feel to use code. But selling copies of code is restricted
