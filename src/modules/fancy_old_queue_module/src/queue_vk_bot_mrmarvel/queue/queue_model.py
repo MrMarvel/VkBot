@@ -189,6 +189,23 @@ class QueueInChat:
             return
         if pos2 >= len(self._queue):
             return
+        if pos1 < 0:
+            return
+        if pos2 < 0:
+            return
         t = self._queue[pos1]
         self._queue[pos1] = self._queue[pos2]
         self._queue[pos2] = t
+
+    def remove(self, from_pos: int) -> ChatUser | None:
+        """
+        Удалить из позиции
+        :param from_pos: Позиция
+        :return: Удаленный пользователь
+        """
+        if from_pos < 0:
+            return None
+        if from_pos >= len(self._queue):
+            return None
+        removed = self._queue[from_pos]
+        self._queue.remove(removed)

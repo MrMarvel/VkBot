@@ -139,6 +139,9 @@ class DialogInChat:
                             # Следующий по очереди
                             self.user_wants_to_remove_first_from_queue()
                             return
+                        elif sub_cmd in ("leave", "leav", "le", "l"):
+                            self.user_wants_to_leave_queue()
+                            return
                         elif sub_cmd in ("switch", "sw", "swtch"):
                             return
                             if not self.is_queue_running:
@@ -233,7 +236,7 @@ class DialogInChat:
             elif pos_in_queue == -3:
                 self.__send_message("Максимум можно отступать до 10 слотов от первой сплошной очереди!")
             else:
-                self.__send_message(f"Вы встали в очередь {pos_in_queue+1}ым!")
+                self.__send_message(f"Вы встали в очередь {pos_in_queue+1}ым! Чтобы выйти !q leave")
         else:
             self.__send_message("Невозможно подключится к несуществующей очереди!")
 
@@ -265,10 +268,25 @@ class DialogInChat:
                 else:
                     self.__send_message(f"Ты можешь уступить как минимум 1 место назад, а ты ввёл {go_back_steps}!")
             else:
-                self.__send_message("Сначала войди в очередь /q j!")
+                self.__send_message("Сначала войди в очередь. !q j")
         else:
             self.__send_message("Очередь не запущена!")
 
+    def user_wants_to_leave_queue(self):
+
+        self._queue_contr = self._bot.get_queue_from_chat(chat_id=self._chat_id)
+        user = self._user
+        if self._queue_contr is not None:
+            queue_list_id = [u.user_id if u is not None else None
+                             for u in self._queue_contr.model.as_list()]
+            if user.user_id in queue_list_id:
+                from_pos = queue_list_id.index(user.user_id)
+                self._queue_contr.model.remove(from_pos)
+                self.__send_message("Вы покинули очередь! Чтобы войти !q j")
+            else:
+                self.__send_message("Сначала войди в очередь !q j")
+        else:
+            self.__send_message("Очередь не запущена!")
 
     def __send_cap_msg(self) -> None:
         """
@@ -312,5 +330,6 @@ class DialogInChat:
     def __send_message_to_chat(self, msg: str):
         self._bot.write_msg_to_chat(self._chat_id, msg)
         # pipeline_to_send_msg.put_nowait((self.__chat_id, msg, False))
+
 
 
