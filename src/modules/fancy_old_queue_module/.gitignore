@@ -1,0 +1,42 @@
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+idea/*
+
+# Configuration file
+data/config.ini
+
+### Gradle template
+.gradle
+**/build/
+!src/**/build/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Cache of project
+.gradletasknamecache
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties
+
+# docs
+docs/.doctrees/
+**/__pycache__
+
+# dist
+dist/
+
+# установка пакета
+*.egg-info
+
+# Виртуальная среда python
+venv/

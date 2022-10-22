@@ -1,7 +1,0 @@
-version: "3.3"  # optional since v1.27.0
-services:
-  app:
-    build: .
-    command: python -m queue_vk_bot_mrmarvel
-    volumes:
-      - .:/data
