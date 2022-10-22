@@ -1,0 +1,20 @@
+name: Deploy PROD VERSION to Heroku
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "queue-vk-bot-mrmarvel-prod" #Must be unique in Heroku
+          heroku_email: "seregakkk999@yandex.ru"
+          remote_branch: "main"
+        env:
+          HD_RANDOM_DATA: "Hello, prod!"
