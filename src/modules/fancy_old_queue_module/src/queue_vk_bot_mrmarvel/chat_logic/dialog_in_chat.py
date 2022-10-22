@@ -236,7 +236,7 @@ class DialogInChat:
             elif pos_in_queue == -3:
                 self.__send_message("Максимум можно отступать до 10 слотов от первой сплошной очереди!")
             else:
-                self.__send_message(f"Вы встали в очередь {pos_in_queue+1}ым! Чтобы выйти !q leave")
+                self.__send_message(f"Вы встали в очередь {pos_in_queue+1}-м! Чтобы выйти !q leave")
         else:
             self.__send_message("Невозможно подключится к несуществующей очереди!")
 
