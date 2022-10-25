@@ -7,6 +7,7 @@ import schedule
 import vk_api.exceptions
 from vk_api import VkApi
 
+from ..utils.thread_with_exception import ThreadWithException
 from ..bot.bot_i import IBot
 from ..gl_vars import *
 
@@ -15,6 +16,7 @@ class RequestController:
     _QUEUE_MAX_SIZE: Final = 10
 
     def __init__(self, bot: IBot, vk: VkApi, bot_group_id: int):
+        self._stopping = False
         self._bot = bot
         self._vk = vk
         self._bot_group_id = bot_group_id
@@ -109,6 +111,8 @@ class RequestController:
         max_iter_pos = 2
         try:
             while 1:
+                if self._stopping:
+                    break
                 iter_pos = (iter_pos + 1) % max_iter_pos
                 try:
                     for _ in range(max_iter_pos):
@@ -130,5 +134,18 @@ class RequestController:
     def start(self):
         if self._started:
             return
-        Thread(target=self.run_cycle_to_send_msg, daemon=True).start()
+        self._thread = Thread(target=self.run_cycle_to_send_msg, daemon=True, args=())
+        self._thread.start()
         self._started = True
+
+    def check_or_stop(self) -> bool:
+        if self._thread.is_alive():
+            return True
+        self.stop()
+        return False
+
+    def stop(self):
+        self._started = False
+        self._stopping = True
+        self._thread.join()
+        self._stopping = False

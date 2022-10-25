@@ -3,8 +3,10 @@
 """
 import os
 import threading
+from time import sleep
 
 from vk_api import VkApi
+from vkbottle import Bot
 
 # Press Shift+F10 to execute it or replace it with your code. Press Double
 # Shift to search everywhere for classes, files, tool windows, actions,
@@ -12,6 +14,7 @@ from vk_api import VkApi
 from .utils.module import Module
 from . import gl_vars
 from .bot.bot_controller import BotController
+
 
 
 class FancyOldQueueModule(Module):
@@ -68,6 +71,10 @@ def run():
     gl_vars.bot_group_id = os.environ.get('BOT_GROUP_ID')  # 209160825
     if gl_vars.bot_group_id is None:
         raise Exception("BOT_GROUP_ID is not in environment!")
+    #
+
+    bottle_bot = Bot(os.environ['TOKEN'])
+
     # Авторизуемся как сообщество
     global vk
     vk = VkApi(token=gl_vars.token)
@@ -75,9 +82,19 @@ def run():
     # threading.Thread(target=run_cycle_to_send_msg, daemon=True).start()
 
     bot = BotController(vk, int(gl_vars.bot_group_id))
-    bot.start()
+    max_shutdown_count = 10
+    for shutdowns_count in range(max_shutdown_count+1):
+        bot.start()
+        if shutdowns_count == 0:
+            sleep(1)
+            bot.stop()
+        while bot.check_or_stop():
+            sleep(1)
+        sleep(3)
+        print("RESTARTING SERVICE....")
     # thread_chats = threading.Thread(target=run_cycle_on_chats, args=(vk,), daemon=True)
     # thread_chats.start()
+
     # thread_ls = threading.Thread(target=run_cycle_on_ls, args=(vk,), daemon=True)
     # thread_ls.start()
     # thread_ls.join()
