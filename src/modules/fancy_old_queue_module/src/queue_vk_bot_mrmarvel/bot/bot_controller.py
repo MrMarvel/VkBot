@@ -1,8 +1,8 @@
 import time
-from _weakref import ref
+from _weakref import ref, ReferenceType
 from collections import deque
 from threading import Thread
-from typing import Final
+from typing import Final, Optional
 
 import schedule as schedule
 from vk_api import VkApi
@@ -15,8 +15,7 @@ from ..chat_logic.dialog_in_ls import RelationshipInLS
 from ..queue.all_queues_controller import AllQueueController
 from ..requests.request_controller import RequestController
 from ..gl_vars import relationships_in_chats, relationships_in_ls, pipeline_to_send_msg
-from ..queue.queue_model import QueueInChat
-from ..bot.bot_i import IBot, permission, has_permission, has_permission_in_chat
+from ..bot.bot_i import IBot, has_permission_in_chat
 
 # @deprecated
 # def write_msg_to_user(vk, user_id, message):
@@ -72,7 +71,8 @@ from ..bot.bot_i import IBot, permission, has_permission, has_permission_in_chat
 #         write_msg_to_user(vk=vk, user_id=deliver_id, message=message)
 #     else:
 #         write_msg_to_chat(vk=vk, chat_id=deliver_id, message=message)
-from ..utils.chat_user import Permission, User
+from ..utils.chat_user import User
+from ..utils.thread_with_exception import ThreadWithException
 
 
 def init_connection(token) -> VkApi | None:
@@ -84,36 +84,79 @@ def init_connection(token) -> VkApi | None:
     return None
 
 
-def update_schedule(bot):
+def update_schedule(bot: Optional[ReferenceType['BotController']]):
     print("Schedule cycle is running!")
-    while bot is not None:
-        schedule.run_pending()
-        time.sleep(1)
-    print("Schedule cycle is stopped!")
+    try:
+        while bot is not None:
+            if bot().stopping:
+                break
+            schedule.run_pending()
+            time.sleep(1)
+    finally:
+        print("Schedule cycle is stopped!")
 
 
 class BotController(IBot):
     CHAT_ID_PREFIX: Final = 2000000000
 
     def __init__(self, vk: VkApi, bot_group_id: int):
+        self.thread_chats = None
+        self.thread_schedule = None
+        self.thread_ls = None
+        self.stopping = False
         self._vk = vk
         self._bot_group_id = bot_group_id
         self._request_contr = RequestController(self, vk, bot_group_id)
-        self._request_contr.start()
         self._all_queues_contr = AllQueueController(bot=self)
         self._sended_messages_to_chat_not_removed = deque[dict]()
 
     def start(self):
-        thread_chats = Thread(target=self.run_cycle_on_chats, args=(), daemon=True)
+        self._request_contr.start()
+        thread_chats = ThreadWithException(target=self.run_cycle_on_chats, args=(), daemon=True)
+        self.thread_chats = thread_chats
         thread_chats.start()
         thread_schedule = Thread(target=update_schedule, args=(ref(self),), daemon=True)
+        self.thread_schedule = thread_schedule
         thread_schedule.start()
         thread_ls = Thread(target=self.run_cycle_on_ls, args=(), daemon=True)
+        self.thread_ls = thread_ls
         thread_ls.start()
-        thread_ls.join()
+
+    def check_or_stop(self) -> bool:
+        if self.thread_chats is None:
+            return False
+        if self.thread_schedule is None:
+            return False
+        if self.thread_ls is None:
+            return False
+        if self.thread_chats.is_alive():
+            if self.thread_schedule.is_alive():
+                if self.thread_ls.is_alive():
+                    if self._request_contr.check_or_stop():
+                        return True
+        self.stop()
+        return False
+
+    def stop(self):
+        try:
+            self.stopping = True
+            if self.thread_ls is not None:
+                self.thread_ls.join()
+            self.thread_ls = None
+            if self.thread_schedule is not None:
+                self.thread_schedule.join()
+            self.thread_schedule = None
+            if self.thread_chats is not None:
+                self.thread_chats.join()
+            self.thread_chats = None
+            self._request_contr.stop()
+            self.stopping = False
+        except Exception as e:
+            print(e)
+            raise e
 
     def create_queue_in_chat(self, chat_id: int, by_user: User) -> QueueControllerInChat:
-        if has_permission_in_chat(user=by_user, in_chat_id=chat_id):
+        if True:
             return self._all_queues_contr.create_queue(chat_id=chat_id)
 
     def get_queue_from_chat(self, chat_id) -> QueueControllerInChat | None:
@@ -215,16 +258,18 @@ class BotController(IBot):
 
         try:
             # Работа с сообщениями из бесед от имени ГРУППЫ
-            longpoll_chat = VkBotLongPoll(self._vk, group_id=self._bot_group_id)
+            longpoll_chat = VkBotLongPoll(self._vk, group_id=self._bot_group_id, wait=1)
             # Основной цикл
-            for event in longpoll_chat.listen():
+            while True:
+                if self.stopping:
+                    break
+                for event in longpoll_chat.check():
+                    # Если пришло новое сообщение
+                    if event.type == VkBotEventType.MESSAGE_NEW:
 
-                # Если пришло новое сообщение
-                if event.type == VkBotEventType.MESSAGE_NEW:
-
-                    # Если оно имеет метку для меня( то есть бота)
-                    if event.from_chat:
-                        self.got_msg_from_user_to_bot_in_chat(chat_msg_event=event)
+                        # Если оно имеет метку для меня( то есть бота)
+                        if event.from_chat:
+                            self.got_msg_from_user_to_bot_in_chat(chat_msg_event=event)
         except Exception as e:
             print(e)
             raise e
@@ -239,17 +284,19 @@ class BotController(IBot):
         print("Main logic cycle for Personal Messages(LS) is running!")
         try:
             # Работа с сообщениями из ЛС
-            longpoll_ls = VkLongPoll(self._vk)
+            longpoll_ls = VkLongPoll(self._vk, wait=5)
             # Основной цикл
-            for event in longpoll_ls.listen():
+            while True:
+                if self.stopping:
+                    break
+                for event in longpoll_ls.check():
+                    # Если пришло новое сообщение
+                    if event.type == VkEventType.MESSAGE_NEW:
 
-                # Если пришло новое сообщение
-                if event.type == VkEventType.MESSAGE_NEW:
-
-                    # Если оно имеет метку для меня( то есть бота)
-                    if event.to_me:
-                        pass
-                        # self.got_msg_from_user_to_bot_in_ls(vk=self._vk, ls_msg_event=event)
+                        # Если оно имеет метку для меня( то есть бота)
+                        if event.to_me:
+                            pass
+                            # self.got_msg_from_user_to_bot_in_ls(vk=self._vk, ls_msg_event=event)
         except Exception as e:
             print(e)
             raise e

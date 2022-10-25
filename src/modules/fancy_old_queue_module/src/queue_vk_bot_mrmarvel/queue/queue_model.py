@@ -2,7 +2,12 @@ from _weakref import ReferenceType, ref
 from copy import deepcopy
 from typing import Callable, Final
 
+from peewee import *
+
 from ..utils.chat_user import ChatUser
+
+
+
 
 
 class QueueInChat:
@@ -166,8 +171,8 @@ class QueueInChat:
             return
         for i in range(from_pos, to_pos):
             t = self._queue[i]
-            self._queue[i] = self._queue[i+1]
-            self._queue[i+1] = t
+            self._queue[i] = self._queue[i + 1]
+            self._queue[i + 1] = t
 
     def next(self, count: int = 1) -> None:
         """

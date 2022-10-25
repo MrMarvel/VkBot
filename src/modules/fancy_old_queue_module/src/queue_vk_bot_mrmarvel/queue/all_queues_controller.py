@@ -3,6 +3,8 @@ from ..queue.queue_controller import QueueControllerInChat
 from ..bot.bot_i import IBot
 from ..utils.chat_user import User
 from ..queue.queue_view import QueueViewInChat
+from ..utils import models
+from ..utils.models import get_connection
 
 
 class AllQueueController:
@@ -24,6 +26,9 @@ class AllQueueController:
         pass
 
     def create_queue(self, chat_id: int) -> QueueControllerInChat:
+        db = get_connection()
+        db.create_tables([models.Queue, models.User, models.QueuePosition])
+        queue = models.Queue.get()
         queue_controller_in_chat = self._queues_in_chats.get(chat_id, None)
         if queue_controller_in_chat is None:
             queue_in_chat = QueueInChat(chat_id)

@@ -7,6 +7,7 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from command import CommandManager
 from event_manager import EventManager, GotMessageFromPublicChatEvent
 from module_controller import ModuleController
+from modules.bottle_queue_module.bottle_queue_module import BottleQueueModule
 from utils.global_bot_i import IGlobalBot
 from modules.fancy_old_queue_module.src.queue_vk_bot_mrmarvel.app import FancyOldQueueModule
 
@@ -82,7 +83,8 @@ class GlobalBot(IGlobalBot):
 
         module_controller = ModuleController()
         # module_controller.start_module(NewQueueModule(self))
-        module_controller.start_module(FancyOldQueueModule())
+        # module_controller.start_module(FancyOldQueueModule())
+        module_controller.start_module(BottleQueueModule())
 
         listener = VkListener(self._token, self._bot_group_id, self._em)
 
