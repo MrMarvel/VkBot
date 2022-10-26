@@ -1,12 +1,28 @@
+import asyncio
+import datetime
 import os
-from typing import Tuple
+from asyncio import sleep
 
+import loguru
+from scheduler.asyncio import Scheduler
+from vkbottle import *
 from vkbottle.bot import Message, Bot
+from vkbottle.dispatch.rules.base import *
+from vkbottle_types.codegen.objects import UsersUserFull
 
+from modules.bottle_queue_module.models import Queue, User, QueuePosition
 from utils.module import Module
 
 bot = Bot(os.environ['TOKEN'])
+api = API(os.environ['TOKEN'])
+
+loguru.logger.disable("DEBUG")
+loguru.logger.disable("vkbottle.framework")
+loguru.logger.disable("vkbottle.polling")
 print(1)
+prefix = "!"
+
+
 class BottleQueueModule(Module):
 
     @property
@@ -23,6 +39,279 @@ class BottleQueueModule(Module):
         pass
 
 
-@bot.on.message(text="пока")
-async def say_handler(message: Message, args: Tuple[str]):
-    print(message, args)
+def get_orm_user(user_info: UsersUserFull) -> User | None:
+    u = None
+    try:
+        u = User.get(user_id=user_info.id)
+    except Exception as _:
+        pass
+    if u is None:
+        try:
+            u = User(user_id=user_info.id, name=user_info.first_name, surname=user_info.last_name,
+                     thirdname=user_info.maiden_name)
+            u.save(force_insert=True)
+        except Exception as _:
+            return None
+    return u
+
+
+def get_orm_queue(chat_id: int) -> Queue | None:
+    q = None
+    try:
+        q = Queue.get(chat_id=chat_id)
+    except Exception as _:
+        return None
+    return q
+
+
+def user_mention_str(user_id: int, display_str: str) -> str:
+    return f"@id{user_id} ({display_str})"
+
+
+def user_mention_name_surname_str(user_id: int, name: str, surname: str) -> str:
+    return user_mention_str(user_id, name + surname)
+
+
+def user_mention_obj_str(user_info: UsersUserFull) -> str:
+    return user_mention_name_surname_str(user_info.id, user_info.first_name, user_info.last_name)
+
+
+async def service_message(message: Message, text: str):
+    answer = await message.reply(message=text)
+
+    scheduler = Scheduler(loop=asyncio.get_running_loop())
+
+    async def delete() -> None:
+        try:
+            await api.messages.delete(cmids=[answer.conversation_message_id], delete_for_all=True,
+                                      peer_id=answer.peer_id)
+        except Exception as _:
+            pass
+
+    scheduler.once(datetime.timedelta(seconds=5), delete)
+
+
+async def user_wants_to_create_queue(message: Message, user_info: UsersUserFull, chat_id) -> Queue | None:
+    u = get_orm_user(user_info)
+    user_mention = user_mention_obj_str(user_info)
+    if u is None:
+        await service_message(message, "Пользователь не найден")
+        return None
+    q = None
+    try:
+        q = Queue.get(chat_id=chat_id)
+    except Exception as _:
+        pass
+    if q is not None:
+        await service_message(message, "Очередь уже создана!")
+        return q
+    try:
+        q = Queue(chat_id=chat_id, created_by=u, created_date=datetime.datetime.now())
+        q.save()
+        await service_message(message, "Очередь создана!")
+    except Exception as _:
+        await message.reply("Неизвестная ошибка")
+        return None
+
+    return q
+
+
+async def send_welcome_msg_to_chat(message: Message):
+    """
+    Сообщение для беседы
+    """
+    msg = "Привет!\n" \
+          "Я Бот EzQueue — Помимо простых оповещений, я сумею создавать очереди для вас!\n" \
+          "🔹 !q create — создать очередь\n" \
+          "🔹 !q join — войти в очередь\n"
+    answer = await message.answer(message=msg)
+    pass
+
+
+def send_cmd_help() -> str:
+    pass
+
+
+@bot.on.chat_message(FromUserRule(True), CommandRule("start", [prefix], 0))
+async def test_cmd_handler(message: Message):
+    await send_welcome_msg_to_chat(message)
+    await sleep(5)
+    try:
+        await api.messages.delete(cmids=[message.conversation_message_id], delete_for_all=True,
+                                  peer_id=2000000000 + message.chat_id)
+    except Exception as _:
+        pass
+
+
+async def user_wants_to_join_queue(message: Message, user_info: UsersUserFull, try_join_to_pos_or_above: int = 0):
+    q = get_orm_queue(message.chat_id)
+    if q is None:
+        await service_message(message, "Невозможно подключится к несуществующей очереди!\n"
+                                       "Чтобы создать очередь !q create")
+        return
+
+    u = get_orm_user(user_info)
+
+    pos_in_queue = None
+    try:
+        pos_in_queue = QueuePosition.get(queue=q, user=u)
+    except Exception as _:
+        pass
+    if pos_in_queue is not None:
+        await service_message(message, "Вы уже в очереди!")
+        return
+
+    all_positions = list(QueuePosition.select().where(QueuePosition.queue == q))
+    pos_in_queue = QueuePosition.push_to_pos_or_above(message, queue=q, user=u, to_pos=try_join_to_pos_or_above)
+    if pos_in_queue == -3:
+        await service_message(message, "Максимум можно отступать до 10 слотов от первой сплошной очереди!")
+    else:
+        await service_message(message, f"Вы встали в очередь {pos_in_queue + 1}-м! Чтобы выйти !q leave")
+
+
+async def user_wants_to_show_queue(message: Message, user_info: UsersUserFull, chat_id: int):
+    pass
+
+
+@bot.on.chat_message(FromUserRule(True))
+async def cmd_queue_handler(message: Message):
+    print(message.chat_id)
+    user = await message.get_user()
+    msg = message.text
+    if message.chat_id < 0:
+        pass
+        # from persenal chat
+    else:
+        create_alias = ['создать очередь', 'создание очереди', 'create queue', 'qc', 'cq',
+                        'очередь появись', 'queue init', 'queue initialization']
+        show_queue_alias = ['вывод очереди', 'очередь', 'текущая очередь']
+        delete_queue_alias = ['удаление очереди', 'delete queue', 'remove queue', 'clear queue', 'очистить очередь',
+                              'очистка очереди']
+        join_queue_alias = ['Встать в очередь', 'join/j', 'занять очередь']
+        for _ in range(1):
+            if msg in create_alias:
+                await user_wants_to_create_queue(message, user, message.chat_id)
+                break
+            if msg in show_queue_alias:
+                user_wants_to_show_queue()
+                break
+            if msg in delete_queue_alias:
+                user_wants_to_close_queue()
+            if msg in join_queue_alias:
+                user_wants_to_join_queue()
+            if msg.startswith(prefix):
+                print("YES")
+                # Это команда
+                clear_msg = msg.removeprefix(prefix)  # Сообщение без префикса
+                cmd_args = clear_msg.split(sep=' ')
+                if len(cmd_args) > 0:
+                    cmd = cmd_args[0]
+                    if cmd == "start":
+                        await send_welcome_msg_to_chat(message)
+                        break
+                    if cmd == "help":
+                        send_cmd_help()
+                        break
+                    if cmd == "prefix" or cmd == "pr":
+                        if len(cmd_args) > 1:
+                            sub_cmd = cmd_args[1]
+                            if sub_cmd == "change" or sub_cmd == "ch":
+                                if len(cmd_args) > 2:
+                                    new_prefix = cmd_args[2]
+                                    if len(new_prefix) == 1:
+                                        change_prefix(new_prefix=new_prefix)
+                                        send_message(f"Теперь у меня новый префикс \"{self.__bot_prefix}\" для "
+                                                     f"команд!")
+                                    else:
+                                        send_message(f"Префикс \"{new_prefix}\" слишком длинный")
+                                else:
+                                    send_message("Не указан префикс.")
+                        else:
+                            send_message(f"Текущий установленный префикс \"{self.__bot_prefix}\".\n"
+                                         f"Доступны следующий суб-команды:\n"
+                                         f"change {{новый префикс}}")
+                        return
+                    if cmd == "queue" or cmd == "q":
+                        q = None
+                        try:
+                            q = Queue.get(chat_id=message.chat_id)
+                        except Exception as _:
+                            pass
+                        if len(cmd_args) > 1:
+                            sub_cmd = cmd_args[1]
+                            if sub_cmd == "create" or sub_cmd == "new":
+                                await user_wants_to_create_queue(message, user, message.chat_id)
+
+                            elif sub_cmd == "join" or sub_cmd == "j":
+                                if len(cmd_args) > 2:
+                                    try:
+                                        join_to_pos = int(cmd_args[2]) - 1
+                                        await user_wants_to_join_queue(message, user,
+                                                                       try_join_to_pos_or_above=join_to_pos)
+                                    except ValueError:
+                                        await service_message(message, f"\"{cmd_args[2]}\" Not A Number!")
+                                else:
+                                    await user_wants_to_join_queue(message, user)
+
+                            elif sub_cmd in ("skip", "sk", "skp"):
+                                if len(cmd_args) > 2:
+                                    try:
+                                        go_back_steps = int(cmd_args[2])
+                                        user_wants_to_skip_back(user=self._user, go_back_steps=go_back_steps)
+                                    except ValueError:
+                                        send_message(f"\"{cmd_args[2]}\" Not A Number!")
+                                else:
+                                    user_wants_to_skip_back(user=self._user)
+                            elif sub_cmd in ("close", "cl", "c"):
+                                user_wants_to_close_queue()
+                                break
+                            elif sub_cmd in ("next", "nxt", "n"):
+                                # self.__send_message("Автор ещё не реализовал эту фичу!")
+                                # Следующий по очереди
+                                user_wants_to_remove_first_from_queue()
+                                break
+                            elif sub_cmd in ("leave", "leav", "le", "l"):
+                                user_wants_to_leave_queue()
+                                break
+                            elif sub_cmd in ("switch", "sw", "swtch"):
+                                break
+                                if not self.is_queue_running:
+                                    self.__send_message(
+                                        f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")
+                                if len(cmd_args) > 3:
+                                    pos1 = int(cmd_args[2])
+                                    pos2 = int(cmd_args[3])
+                                    # if type(pos1) is not int:
+                                    #     self.__send_message(f"{pos1} не число!")
+                                    #     return
+                                    # if type(pos2) is not int:
+                                    #     self.__send_message(f"{pos2} не число!")
+                                    #     return
+                                    if not self._all_dialogs_in_chats_controller.switch(pos1 - 1, pos2 - 1):
+                                        self.__send_message(f"Нет столько людей в очереди сколько указали вы позиций! "
+                                                            f"{max(pos1, pos2)}")
+                                        break
+                                    self.__send_message(f"Были успешно поменяны местами {pos1} и {pos2}!")
+                                    self.user_wants_to_show_queue()
+                                break
+                            else:
+                                send_message(f"Ожидалось create|new, join|j, skip|sk, next, но получил {sub_cmd}.")
+                        elif self.is_queue_running:
+                            self.user_wants_to_show_queue()
+                        else:
+                            self.__send_message(f"Нету очереди. Чтобы создать очередь {self.__bot_prefix}q create")
+                            # self.__chat.send_queue_list()
+                        break
+
+                self.__send_idk_msg_to_chat()  # Не одна команда не сработала
+                break
+
+        try:
+            await api.messages.delete(cmids=[message.conversation_message_id], delete_for_all=True,
+                                      peer_id=message.peer_id)
+        except Exception as _:
+            pass
+        # from group chat
+
+
+bot.run_forever()
