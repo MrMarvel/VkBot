@@ -10,3 +10,5 @@ vk_api==11.9.9
 sphinx_rtd_theme==1.0.0
 peewee==3.15.3
 vkbottle==4.3.11
+loguru==0.6.0
+scheduler==0.7.4
