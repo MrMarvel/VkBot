@@ -46,6 +46,7 @@ class Queue(BaseModel):
     chat = ForeignKeyField(Chat, null=False, unique=True)
     created_by = ForeignKeyField(User, null=False)
     created_date = DateTimeField(null=False)
+    last_show_list_cmid = IntegerField(null=True, unique=True, default=None)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
