@@ -11,7 +11,7 @@ from vkbottle import Bot
 # Press Shift+F10 to execute it or replace it with your code. Press Double
 # Shift to search everywhere for classes, files, tool windows, actions,
 # and settings.
-from .utils.module import Module
+from utils.module import Module
 from . import gl_vars
 from .bot.bot_controller import BotController
 
