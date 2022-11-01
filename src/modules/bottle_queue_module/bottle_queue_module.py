@@ -98,6 +98,8 @@ async def queue_list_message(message: Message):
     user_info = await message.get_user()
     queue = Queue.get_or_none(chat_id=message.chat_id)
     if queue is None:
+        await service_message(message,
+                              f"Нету очереди. Чтобы создать очередь {prefix}q create")
         return
     last_cmid = queue.last_show_list_cmid
 
@@ -165,13 +167,16 @@ async def send_welcome_msg_to_chat(message: Message):
     msg = "Привет!\n" \
           "Я Бот EzQueue — Помимо простых оповещений, я сумею создавать очереди для вас!\n" \
           "🔹 !q create — создать очередь\n" \
-          "🔹 !q join — войти в очередь\n"
+          "🔹 !q join — войти в очередь\n" \
+          "🔹 !q skip — пропустить 1 человека вперёд\n" \
+          "🔹 !q leave — выйти из очереди\n" \
+          "🔹 !q close — закрыть очередь\n"
     answer = await message.answer(message=msg)
     pass
 
 
-def send_cmd_help() -> str:
-    pass
+async def send_cmd_help(message: Message):
+    await send_welcome_msg_to_chat(message)
 
 
 # @bot.on.chat_message(FromUserRule(), CommandRule("start", [prefix], 0))
@@ -230,10 +235,56 @@ async def idk_msg_to_chat(message: Message):
 async def user_wants_to_close_queue(message, chat_id: int):
     q: Queue | None = Queue.get_or_none(chat_id=chat_id)
     if q is not None:
-        q.delete_instance()
+        QueuePosition.delete().where(QueuePosition.queue == q).execute()
+        q.delete_instance(recursive=True)
         await service_message(message, "Прощай очередь!")
     else:
         await service_message(message, "Очереди и так нету!")
+
+
+async def user_wants_to_leave_queue(message: Message, user_info: UsersUserFull, chat_id):
+    q: Queue | None = Queue.get_or_none(chat_id=chat_id)
+    if q is not None:
+        user = get_orm_user(user_info)
+        if user is not None:
+            queue_pos: QueuePosition | None = QueuePosition.get_or_none(user=user, queue=q)
+            if queue_pos is not None:
+                from_pos = queue_pos.pos_in_queue
+                queue_pos.delete_instance()
+                await service_message(message, "Вы покинули очередь! Чтобы войти !q j")
+            else:
+                await service_message(message, "Сначала войди в очередь !q j")
+        else:
+            await service_message(message, "Пользователя не существует!")
+    else:
+        await service_message(message, "Очередь не запущена!")
+
+
+async def user_wants_to_skip_back(message: Message, user_info: UsersUserFull, chat_id: int, go_back_steps: int = 1):
+    q: Queue | None = Queue.get_or_none(chat_id=chat_id)
+    if q is not None:
+        user = get_orm_user(user_info)
+        if user is not None:
+            queue_pos: QueuePosition | None = QueuePosition.get_or_none(user=user, queue=q)
+            if queue_pos is not None:
+                from_pos = queue_pos.pos_in_queue
+                if go_back_steps >= 1:
+                    to_pos = from_pos + go_back_steps
+                    QueuePosition.move(q, user, to_pos)
+                    new_pos_in_queue: QueuePosition | None = QueuePosition.get_or_none(user=user, queue=q)
+                    if new_pos_in_queue is not None:
+                        await service_message(message, f"Теперь вы на {new_pos_in_queue.pos_in_queue + 1} позиции!")
+                    else:
+                        await service_message(message, "Пропал из очереди из-за ошибки!")
+                else:
+                    await service_message(message, f"Ты можешь уступить как минимум 1 место назад, "
+                                                   f"а ты ввёл {go_back_steps}!")
+            else:
+                await service_message(message, "Сначала войди в очередь. !q j")
+        else:
+            await service_message(message, "Пользователя не существует!")
+    else:
+        await service_message(message, "Очередь не запущена!")
 
 
 @bot.on.chat_message(FromUserRule(True))
@@ -280,7 +331,7 @@ async def cmd_queue_handler(message: Message):
                             await send_welcome_msg_to_chat(message)
                             break
                         if cmd == "help":
-                            send_cmd_help()
+                            await send_cmd_help(message)
                             break
                         if cmd == "prefix" or cmd == "pr":
                             if len(cmd_args) > 1:
@@ -289,17 +340,20 @@ async def cmd_queue_handler(message: Message):
                                     if len(cmd_args) > 2:
                                         new_prefix = cmd_args[2]
                                         if len(new_prefix) == 1:
+                                            return
                                             change_prefix(new_prefix=new_prefix)
-                                            send_message(f"Теперь у меня новый префикс \"{self.__bot_prefix}\" для "
-                                                         f"команд!")
+                                            await service_message(message,
+                                                                  f"Теперь у меня новый префикс \"{prefix}\" для "
+                                                                  f"команд!")
                                         else:
-                                            send_message(f"Префикс \"{new_prefix}\" слишком длинный")
+                                            await service_message(message, f"Префикс \"{new_prefix}\" слишком длинный")
                                     else:
-                                        send_message("Не указан префикс.")
+                                        await service_message(message, "Не указан префикс.")
                             else:
-                                send_message(f"Текущий установленный префикс \"{self.__bot_prefix}\".\n"
-                                             f"Доступны следующий суб-команды:\n"
-                                             f"change {{новый префикс}}")
+                                await service_message(message,
+                                                      f"Текущий установленный префикс \"{prefix}\".\n"
+                                                      f"Доступны следующий суб-команды:\n"
+                                                      f"change {{новый префикс}}")
                             return
                         if cmd == "queue" or cmd == "q":
                             q = None
@@ -327,21 +381,25 @@ async def cmd_queue_handler(message: Message):
                                     if len(cmd_args) > 2:
                                         try:
                                             go_back_steps = int(cmd_args[2])
-                                            user_wants_to_skip_back(user=self._user, go_back_steps=go_back_steps)
+                                            await user_wants_to_skip_back(message, user_info=user,
+                                                                          chat_id=message.chat_id,
+                                                                          go_back_steps=go_back_steps)
                                         except ValueError:
-                                            send_message(f"\"{cmd_args[2]}\" Not A Number!")
+                                            await service_message(message, f"\"{cmd_args[2]}\" Not A Number!")
                                     else:
-                                        user_wants_to_skip_back(user=self._user)
+                                        await user_wants_to_skip_back(message, user_info=user,
+                                                                      chat_id=message.chat_id)
                                 elif sub_cmd in ("close", "cl", "c"):
-                                    user_wants_to_close_queue()
+                                    await user_wants_to_close_queue(message, message.chat_id)
                                     break
                                 elif sub_cmd in ("next", "nxt", "n"):
                                     # self.__send_message("Автор ещё не реализовал эту фичу!")
                                     # Следующий по очереди
+                                    return
                                     user_wants_to_remove_first_from_queue()
                                     break
                                 elif sub_cmd in ("leave", "leav", "le", "l"):
-                                    user_wants_to_leave_queue()
+                                    await user_wants_to_leave_queue(message, user_info=user, chat_id=message.chat_id)
                                     break
                                 elif sub_cmd in ("switch", "sw", "swtch"):
                                     break
@@ -372,8 +430,8 @@ async def cmd_queue_handler(message: Message):
                                                           f"но получил {sub_cmd}.")
                             else:
                                 await user_wants_to_show_queue(message)
-                                await service_message(message,
-                                                      f"Нету очереди. Чтобы создать очередь {prefix}q create")
+                                # await service_message(message,
+                                #                       f"Нету очереди. Чтобы создать очередь {prefix}q create")
                                 # self.__chat.send_queue_list()
                             break
 
