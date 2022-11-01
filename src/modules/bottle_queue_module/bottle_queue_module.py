@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import os
+import random
 from asyncio import sleep
 from typing import List
 
@@ -20,6 +21,7 @@ api = API(os.environ['TOKEN'])
 loguru.logger.disable("DEBUG")
 loguru.logger.disable("vkbottle.framework")
 loguru.logger.disable("vkbottle.polling")
+time_to_live_service_message = 30  # seconds
 print(1)
 prefix = "!"
 
@@ -89,7 +91,7 @@ async def service_message(message: Message, text: str):
         except Exception as _:
             pass
 
-    scheduler.once(datetime.timedelta(seconds=5), delete)
+    scheduler.once(datetime.timedelta(seconds=time_to_live_service_message), delete)
 
 
 async def queue_list_message(message: Message):
@@ -129,6 +131,7 @@ async def queue_list_message(message: Message):
     answer = await message.answer(msg)
     queue.last_show_list_cmid = answer.conversation_message_id
     queue.save()
+
 
 async def user_wants_to_create_queue(message: Message, user_info: UsersUserFull, chat_id) -> Queue | None:
     u = get_orm_user(user_info)
@@ -171,8 +174,10 @@ def send_cmd_help() -> str:
     pass
 
 
-@bot.on.chat_message(FromUserRule(True), CommandRule("start", [prefix], 0))
+# @bot.on.chat_message(FromUserRule(), CommandRule("start", [prefix], 0))
 async def test_cmd_handler(message: Message):
+    return
+    await service_message(message, "TEST")
     await send_welcome_msg_to_chat(message)
     await sleep(5)
     try:
@@ -208,9 +213,27 @@ async def user_wants_to_join_queue(message: Message, user_info: UsersUserFull, t
         await service_message(message, f"Вы встали в очередь {pos_in_queue + 1}-м! Чтобы выйти !q leave")
 
 
-async def user_wants_to_show_queue(message: Message, user_info: UsersUserFull, chat_id: int):
+async def user_wants_to_show_queue(message: Message):
     await queue_list_message(message)
 
+
+async def idk_msg_to_chat(message: Message):
+    """
+    Общее сообщение
+    """
+    rand_msgs = "К сожалению я не понял, что вы имели ввиду.", \
+                "Мяу?\nА вы поняли, что я имел в виду? Вот и я также вас.", \
+                "Хммм.. даже не знаю что сказать."
+    await service_message(message, random.choice(rand_msgs))
+
+
+async def user_wants_to_close_queue(message, chat_id: int):
+    q: Queue | None = Queue.get_or_none(chat_id=chat_id)
+    if q is not None:
+        q.delete_instance()
+        await service_message(message, "Прощай очередь!")
+    else:
+        await service_message(message, "Очереди и так нету!")
 
 
 @bot.on.chat_message(FromUserRule(True))
@@ -218,6 +241,7 @@ async def cmd_queue_handler(message: Message):
     print(message.chat_id)
     user = await message.get_user()
     msg = message.text
+    got_bot_command = False
     try:
         if message.chat_id < 0:
             pass
@@ -231,16 +255,21 @@ async def cmd_queue_handler(message: Message):
             join_queue_alias = ['Встать в очередь', 'join/j', 'занять очередь']
             for _ in range(1):
                 if msg in create_alias:
+                    got_bot_command = True
                     await user_wants_to_create_queue(message, user, message.chat_id)
                     break
                 if msg in show_queue_alias:
-                    await user_wants_to_show_queue()
+                    got_bot_command = True
+                    await user_wants_to_show_queue(message)
                     break
                 if msg in delete_queue_alias:
-                    user_wants_to_close_queue()
+                    got_bot_command = True
+                    await user_wants_to_close_queue(message, chat_id=message.chat_id)
                 if msg in join_queue_alias:
-                    user_wants_to_join_queue()
+                    got_bot_command = True
+                    await user_wants_to_join_queue(message, user)
                 if msg.startswith(prefix):
+                    got_bot_command = True
                     print("YES")
                     # Это команда
                     clear_msg = msg.removeprefix(prefix)  # Сообщение без префикса
@@ -335,31 +364,32 @@ async def cmd_queue_handler(message: Message):
                                             break
                                         await service_message(message,
                                                               f"Были успешно поменяны местами {pos1} и {pos2}!")
-                                        await user_wants_to_show_queue(message, user, message.chat_id)
+                                        await user_wants_to_show_queue(message)
                                     break
                                 else:
                                     await service_message(message,
                                                           f"Ожидалось create|new, join|j, skip|sk, next, "
                                                           f"но получил {sub_cmd}.")
                             else:
-                                await user_wants_to_show_queue(message, user, message.chat_id)
+                                await user_wants_to_show_queue(message)
                                 await service_message(message,
                                                       f"Нету очереди. Чтобы создать очередь {prefix}q create")
                                 # self.__chat.send_queue_list()
                             break
 
-                    self.__send_idk_msg_to_chat()  # Не одна команда не сработала
+                    await idk_msg_to_chat(message)  # Не одна команда не сработала
                     break
 
             # from group chat
     except Exception as e:
         await service_message(message, "Непредвиденная ошибка")
         raise e
-    try:
-        await api.messages.delete(cmids=[message.conversation_message_id], delete_for_all=True,
-                                  peer_id=message.peer_id)
-    except Exception as _:
-        pass
+    if got_bot_command:
+        try:
+            await api.messages.delete(cmids=[message.conversation_message_id], delete_for_all=True,
+                                      peer_id=message.peer_id)
+        except Exception as _:
+            pass
 
 
 bot.run_forever()
